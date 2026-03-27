@@ -1,0 +1,78 @@
+/* Estilos Base (Modo Claro por defecto) */
+.gemini-output {
+  --bg-color: #ffffff;
+  --text-color: #374151;
+  --heading-color: #111827;
+  --border-color: #e5e7eb;
+  --code-bg: #f3f4f6;
+  --pre-bg: #1f2937;
+  --quote-bg: #eff6ff;
+  --quote-border: #3b82f6;
+  --link-color: #2563eb;
+  line-height: 1.6;
+  color: var(--text-color);
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+/* Soporte para Modo Oscuro (Negro Absoluto) */
+.gemini-output.dark {
+  --bg-color: #000000;
+  --text-color: #d1d5db; /* Gris claro para evitar fatiga */
+  --heading-color: #ffffff;
+  --border-color: #262626;
+  --code-bg: #1a1a1a;
+  --pre-bg: #0a0a0a;
+  --quote-bg: #111827;
+  --quote-border: #3b82f6;
+  --link-color: #60a5fa;
+}
+/* Aplicación de Estilos */
+.gemini-output.dark h1,
+.gemini-output.dark h2,
+.gemini-output.dark h3 {
+  color: var(--gray-100);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.gemini-output.dark h1 {
+  font-size: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+/* Tablas con fondo absoluto */
+.gemini-output.dark table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.gemini-output.dark th,
+.gemini-output.dark td {
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+}
+.gemini-output.dark tr {
+  margin-block: 20px;
+}
+
+.gemini-output.dark th {
+  background-color: var(--code-bg);
+  color: var(--heading-color);
+}
+
+/* Citas */
+.gemini-output.dark blockquote {
+  border-left: 4px solid var(--quote-border);
+  background-color: var(--quote-bg);
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  font-style: italic;
+}
+
+.gemini-output.dark a {
+  color: var(--link-color);
+  text-decoration: none;
+}
