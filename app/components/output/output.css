@@ -1,5 +1,5 @@
-/* Estilos Base (Modo Claro por defecto) */
-.gemini-output {
+/* Estilos Base */
+.model-output {
   --bg-color: #ffffff;
   --text-color: #374151;
   --heading-color: #111827;
@@ -9,16 +9,18 @@
   --quote-bg: #eff6ff;
   --quote-border: #3b82f6;
   --link-color: #2563eb;
+  --table-zebra: #f9fafb;
+
   line-height: 1.6;
   color: var(--text-color);
   max-width: 850px;
   margin: 0 auto;
 }
 
-/* Soporte para Modo Oscuro (Negro Absoluto) */
-.gemini-output.dark {
+/* Modo Oscuro (Negro Absoluto) */
+.model-output.dark {
   --bg-color: #000000;
-  --text-color: #d1d5db; /* Gris claro para evitar fatiga */
+  --text-color: #d1d5db;
   --heading-color: #ffffff;
   --border-color: #262626;
   --code-bg: #1a1a1a;
@@ -26,53 +28,101 @@
   --quote-bg: #111827;
   --quote-border: #3b82f6;
   --link-color: #60a5fa;
-}
-/* Aplicación de Estilos */
-.gemini-output.dark h1,
-.gemini-output.dark h2,
-.gemini-output.dark h3 {
-  color: var(--gray-100);
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+  --table-zebra: #0a0a0a; /* Sutil diferencia del fondo absoluto */
 }
 
-.gemini-output.dark h1 {
-  font-size: 2rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 0.5rem;
+.model-output h1,
+.model-output h2,
+.model-output h3,
+.model-output h4,
+.model-output h5,
+.model-output h6 {
+  margin-block: 1.2rem;
 }
 
-/* Tablas con fondo absoluto */
-.gemini-output.dark table {
+.model-output p {
+  margin-block: 1rem;
+}
+.model-output ol > li {
+  list-style-type: disc;
+  margin-left: 1rem;
+}
+.model-output ul > li {
+  list-style-type: decimal;
+  margin-left: 1rem;
+}
+.model-output ol,
+.model-output ul {
+  margin-left: 0.5rem;
+}
+
+/* --- OPTIMIZACIÓN DE TABLAS --- */
+
+/* Contenedor para scroll horizontal (debes envolver la tabla en un div en React) */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin: 2rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.model-output table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1.5rem 0;
+  font-size: 0.95rem;
+  background-color: var(--bg-color);
 }
 
-.gemini-output.dark th,
-.gemini-output.dark td {
-  border: 1px solid var(--border-color);
-  padding: 0.75rem;
-}
-.gemini-output.dark tr {
-  margin-block: 20px;
-}
-
-.gemini-output.dark th {
+.model-output th {
   background-color: var(--code-bg);
   color: var(--heading-color);
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 2px solid var(--border-color);
 }
 
-/* Citas */
-.gemini-output.dark blockquote {
-  border-left: 4px solid var(--quote-border);
-  background-color: var(--quote-bg);
-  margin: 1.5rem 0;
-  padding: 1rem 1.5rem;
-  font-style: italic;
+.model-output th,
+.model-output td {
+  padding: 1rem 1.25rem; /* Más espacio interno */
+  border: 1px solid var(--border-color);
 }
 
-.gemini-output.dark a {
-  color: var(--link-color);
-  text-decoration: none;
+/* Efecto Zebra para separar filas visualmente */
+.model-output tr:nth-child(even) {
+  background-color: var(--table-zebra);
+}
+
+/* Efecto hover para no perderse en tablas grandes */
+.model-output tr:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* Quitar bordes externos de la tabla si el wrapper ya los tiene */
+.model-output table {
+  border: none;
+}
+
+/* --- OPTIMIZACIÓN MATEMÁTICAS (KATEX) --- */
+.model-output .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.5rem;
+  /* Evitar que una fórmula larga rompa el diseño responsivo */
+  max-width: 100%;
+}
+
+.model-output .katex-display > .katex {
+  /* Asegurar que el contenido interno respete el scroll */
+  white-space: normal;
+}
+/* Ajuste para fórmulas químicas */
+.model-output .ce {
+  font-family: inherit; /* Mantiene la fuente del texto pero recta */
+  letter-spacing: 0.02em;
+}
+
+/* Las flechas de reacción a veces necesitan espacio extra */
+.model-output .katex .react-arrow {
+  margin: 0 0.5rem;
 }

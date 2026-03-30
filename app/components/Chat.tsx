@@ -7,42 +7,88 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Send,
-  Image,
-  Settings2,
-  Images,
-  FolderCode,
-  Search,
-} from "lucide-react";
+import { Send, Settings2, Search } from "lucide-react";
 import usePreventSelectScroll from "../hooks/usePreventSelectScroll";
-import GeminiMessages from "./GeminiMessages";
-import gemini from "../server-actions/gemini";
-import React, { useEffect } from "react";
+import getTranscription from "../server-actions/getTranscription";
+import Microphone from "./Microphone";
+import {
+  GenericResponse,
+  GenericHistory,
+} from "../server-actions/chatFormAction";
+import React, { useEffect, useRef, startTransition } from "react";
 import { useState, useActionState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import Logo from "./Logo";
-import type { Message } from "../types";
+import ChatFormAction from "../server-actions/chatFormAction";
+import ModelsMessagesManager from "./ModelsMessagesManager";
+import { MODELS } from "../constants";
+import type { Models } from "../types";
+import useRecorder from "../hooks/useRecorder";
+import Errors from "./errors/Errors";
+import RenderUserMessage from "./RenderUserMessages";
+
+type Form = {
+  prompt: string;
+  tool: string;
+  model: Models;
+};
 
 const Chat = () => {
-  const [form, setForm] = useState({
-    text: "",
+  const [form, setForm] = useState<Form>({
+    prompt: "",
     tool: "text",
+    model: MODELS.gpt,
   });
-  const [state, action, isPending] = useActionState(gemini, null);
-  const [history, setHistory] = useState<Message[]>([]);
+  const [state, action, isPending] = useActionState(ChatFormAction, null);
+  const [openErrorModal, setOpenErrorModal] = useState(false);
+  const [history, setHistory] = useState<GenericHistory[]>([]);
   const [sendIsAllowed, setSendIsAlowed] = useState(false);
-  const [userMessages, setUserMessages] = useState<string[]>([]);
+  const [feedbackMessage, setFeedbackMessage] = useState<string>("");
+  const [lastUserMessage, setLastUserMessage] = useState<string>("");
+  const recorder = useRecorder();
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    if (recorder.audioBlob) {
+      if (recorder.duration > 1000) {
+        const formData = new FormData();
+        formData.append("audio", recorder.audioBlob, "audio.webm");
+        fetch(`/api/transcriptions`, {
+          method: "POST",
+          body: formData,
+        }).then(async (res) => {
+          console.log(res);
+          const transcription = await res.json();
+          if (transcription.text) {
+            setForm({ ...form, prompt: transcription.text });
+          }
+        });
+      } else {
+        setFeedbackMessage("Intenta grabar un mensaje de al menos 1 segundo");
+      }
+    }
+  }, [recorder]);
+
   usePreventSelectScroll();
   useEffect(() => {
     if (state && "history" in state) {
       setHistory(state.history);
     }
+    if (state && "error" in state) {
+      setOpenErrorModal(true);
+      setFeedbackMessage("Intenta cambiar de modelo, o espera un minuto");
+    }
   }, [state]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setFeedbackMessage("");
+    }, 3000);
+  }, [feedbackMessage]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    setForm({ ...form, text: value });
+    setForm({ ...form, prompt: value });
     if (value.trim()) {
       setSendIsAlowed(true);
     } else {
@@ -57,29 +103,44 @@ const Chat = () => {
       if (sendIsAllowed && !isPending) {
         e.preventDefault();
         e.currentTarget.form?.requestSubmit();
-        setForm({ ...form, text: "" });
+        setForm({ ...form, prompt: "" });
       } else {
         e.preventDefault();
       }
     }
   };
   const handleSubmit = () => {
-    setUserMessages((prev) => [...prev, form.text]);
-    setForm({ ...form, text: "" });
-    window.scrollTo({
-      behavior: "smooth",
-      top: document.body.scrollHeight,
+    setLastUserMessage(form.prompt);
+    setForm({ ...form, prompt: "" });
+  };
+  const retry = () => {
+    if (!formRef.current) return;
+    const formData = new FormData(formRef.current);
+    formData.set("prompt", lastUserMessage);
+    startTransition(() => {
+      action(formData);
     });
   };
 
   return (
-    <section className="h-full flex w-full justify-center items-center flex-col">
-      {userMessages.length > 0 ? (
-        <GeminiMessages
-          response={state}
+    <section
+      className="h-full flex w-full justify-center items-center flex-col
+     overflow-y-hidden"
+    >
+      {state && "error" in state && (
+        <Errors
+          code={state.error}
+          open={openErrorModal}
+          setOpen={setOpenErrorModal}
+        />
+      )}
+      {lastUserMessage ? (
+        <ModelsMessagesManager
+          history={history}
           isPending={isPending}
-          imageGeneration={form.tool === "images"}
-          fallbackUserMessage={userMessages[userMessages.length - 1]}
+          lastUserMessage={lastUserMessage}
+          hasError={!!(state && "error" in state)}
+          onRetry={retry}
         />
       ) : (
         <div
@@ -100,16 +161,24 @@ const Chat = () => {
         </div>
       )}
       <form
+        ref={formRef}
         onSubmit={handleSubmit}
-        className="w-full max-w-[680px] shadow-md shadow-neutral-900/80 rounded-lg  left-1/2 -translate-x-1/2 
-        bg-neutral-50 dark:bg-neutral-900 fixed z-50 bottom-0 px-4"
+        className="w-full shadow-[0_-10px_40px_#fff] dark:shadow-[0_-10px_40px_#000]
+        max-w-[780px] rounded-lg
+        left-1/2 -translate-x-1/2 bg-neutral-50 dark:bg-neutral-900 fixed
+        z-50 bottom-0 px-4 lg:px-7"
         action={action}
       >
+        {feedbackMessage && (
+          <p className="text-amber-600 dark:text-amber-400 text-sm absolute -top-6">
+            {feedbackMessage}
+          </p>
+        )}
         <Textarea
-          value={form.text}
+          value={form.prompt}
           onChange={handleChange}
-          name={"text"}
-          className="w-full text-sm sm:text-md"
+          name={"prompt"}
+          className="w-full text-sm sm:text-md md:text-[1rem] min-h-20"
           onKeyDown={handleKeyDown}
           placeholder="Pregunta a Segment"
         />
@@ -121,15 +190,17 @@ const Chat = () => {
         />
         <div className="flex items-center justify-between py-7 px-1 w-full h-7">
           <Select
-            name="tool"
-            onValueChange={handleToolChange}
-            value={form.tool}
+            name="model"
+            onValueChange={(value) =>
+              setForm({ ...form, model: value as Models })
+            }
+            value={form.model}
           >
             <SelectTrigger className="hover:cursor-pointer hover:text-neutral-700 dark:hover:text-neutral-200">
               <SelectValue
                 placeholder={
                   <div className="flex items-center gap-2">
-                    <Settings2 /> Herramientas
+                    <Settings2 /> Modelo
                   </div>
                 }
               />
@@ -139,38 +210,37 @@ const Chat = () => {
               className="-top-10 popper"
             >
               <SelectGroup>
-                <SelectItem className="hover:cursor-pointer" value="text">
-                  <Settings2 />
-                  Texto
-                </SelectItem>
-                <SelectItem className="hover:cursor-pointer" value="images">
-                  <Images />
-                  Imágenes
-                </SelectItem>
-                <SelectItem className="hover:cursor-pointer" value="canvas">
-                  <FolderCode />
-                  Canvas
+                <SelectItem className="hover:cursor-pointer" value={MODELS.gpt}>
+                  OpenAI GPT OSS 20B
                 </SelectItem>
                 <SelectItem
                   className="hover:cursor-pointer"
-                  value="deepResearch"
+                  value={MODELS.llama}
                 >
-                  <Search />
-                  Investigación profunda
+                  Llama 3.3 70B
+                </SelectItem>
+                <SelectItem
+                  className="hover:cursor-pointer"
+                  value={MODELS.gemini}
+                >
+                  Gemini 2.5 Flash
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
-          <button
-            className="disabled:opacity-50 p-2 dark:bg-white dark:text-black
+          <div className="flex items-center max-sm:gap-1 max-sm:scale-90 gap-2">
+            <Microphone recorder={recorder} />
+            <button
+              className="disabled:opacity-50 p-2 dark:bg-white dark:text-black
             transition-colors
             bg-black text-white hover:bg-neutral-900 dark:hover:bg-neutral-200
              rounded-full disabled:cursor-not-allowed"
-            disabled={isPending || !form.text.trim()}
-            type="submit"
-          >
-            <Send size={20} />
-          </button>
+              disabled={isPending || !form.prompt.trim()}
+              type="submit"
+            >
+              <Send size={20} />
+            </button>
+          </div>
         </div>
       </form>
     </section>

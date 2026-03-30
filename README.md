@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Segment: Inteligencia Artificial para la Comunidad FACYT
 
-## Getting Started
+¡Hola! 👋 Bienvenido al repositorio oficial de Segment. Si estás aquí, es muy probable que seas estudiante de la FACYT (Universidad de Carabobo) o alguien apasionado por la tecnología que busca colaborar en un proyecto con propósito.
 
-First, run the development server:
+Mi nombre es Samuel Nelo, soy estudiante de Computación y desarrollador de este proyecto. Segment nace con una misión clara: democratizar el acceso a modelos de lenguaje avanzados (LLMs) mediante una interfaz moderna, intuitiva y optimizada para el ámbito académico.
+
+## 🚀 Características Principales
+
+Segment no es solo un chat, es una herramienta diseñada para el rigor científico:
+
+Renderizado Científico Avanzado: Soporte completo para ecuaciones matemáticas complejas y fórmulas químicas mediante LaTeX (\ceH2O, ∫f(x)dx).
+
+Transcripción Inteligente: Integración con Groq (Whisper) para convertir voz a texto en tiempo real con una velocidad asombrosa.
+
+Multimodelo: Acceso a la potencia de Gemini 2.5 Flash para razonamiento lógico y académico.
+
+Enfoque en FACYT: Conocimiento contextual sobre nuestra facultad y la Universidad de Carabobo.
+
+🛠️ Stack Tecnológico
+Segment está construido con las tecnologías más modernas para garantizar velocidad y escalabilidad:
+
+Tecnología Propósito
+[Next.js 15](https://nextjs.org/) Framework de React para el renderizado del lado del servidor (SSR).
+[TypeScript](https://www.typescriptlang.org/) Tipado estático para un código robusto y mantenible.
+[Tailwind CSS](https://tailwindcss.com/) Estilizado moderno y responsivo con soporte para Modo Oscuro.
+[Gemini API](https://ai.google.dev/) Cerebro principal del asistente para tareas académicas.
+[Groq API](https://groq.com/) Procesamiento de audio ultra rápido y respuestas de baja latencia.
+
+## 💻 Configuración del Entorno (Local)
+
+Sigue estos pasos para tener tu propia instancia de Segment corriendo en minutos:
+
+1. Clonar e Instalar
+
+```bash
+git clone https://github.com/tu-usuario/segment.git
+cd segment
+npm install
+```
+
+2. Variables de Entorno
+   Crea un archivo .env en la raíz del proyecto y añade tus credenciales:
+
+```.env
+GEMINI_API_KEY=tu_api_key_de_gemini
+GROQ_API_KEY=tu_api_key_de_groq
+```
+
+Nota: Puedes obtener tus llaves en AI Studio y Groq Console.
+
+3. Ejecutar
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visita [localhost:3000](http://localhost:3000) y comienza a interactuar con Segment.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🤝 Colaboración y Comunidad
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Este proyecto es de código abierto y "hecho en casa". Como desarrollador enfocado en el Frontend, estoy buscando mentes brillantes (graduados o estudiantes) que deseen fortalecer el Backend y la infraestructura de IA.
 
-## Learn More
+¿Quieres sumarte al equipo?
 
-To learn more about Next.js, take a look at the following resources:
+Explora mi [Portfolio Profesional](https://samuel-nelo-portfolio.vercel.app/).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Envíame un correo pulsando el icono de Gmail.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+¡Hagamos que la tecnología en la UC llegue al siguiente nivel! 🚀
 
-## Deploy on Vercel
+Desarrollado con ❤️ por Samuel Nelo - Estudiante de Computación, FACYT, UC.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Arquitectura del proyecto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- app/
+
+```
+.
+├── api -> Routes que corren en el servidor
+│   └── transcriptions -> Transcribe audio a texto
+│       └── route.ts
+├── components
+│   ├── Chat.tsx -> Archivo principal con todas las interacciones del usuario con  Segment
+│   ├── Header.tsx
+│   ├── Logo.tsx
+│   ├── Microphone.tsx
+│   ├── ModelsMessagesManager.tsx
+│   ├── RenderUserMessages.tsx
+│   ├── ThemeButton.tsx
+│   ├── context
+│   │   ├── ThemeContext.ts
+│   │   └── ThemeProvider.tsx
+│   ├── errors
+│   │   └── Errors.tsx
+│   └── output
+│       ├── CopyButton.tsx
+│       ├── Output.tsx
+│       └── output.css
+├── constants.ts
+├── globals.css
+├── hooks
+│   ├── useCopyClipboard.ts
+│   ├── usePreventSelectScroll.ts
+│   ├── useRecorder.ts
+│   └── useTheme.ts
+├── icon.png
+├── layout.tsx
+├── page.tsx
+├── server-actions -> funciones de servidor
+│   ├── ModelInstructions.md
+│   ├── chatFormAction.ts
+│   ├── gemini.ts
+│   ├── getTranscription.ts
+│   └── groq.ts
+└── types.d.ts
+```

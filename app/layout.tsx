@@ -20,6 +20,84 @@ const monaSans = Mona_Sans({
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
+const keywords = [
+  "Segment",
+  "IA",
+  "Educación Superior",
+  "Segment ai",
+  "Segment ia",
+  "Ingenieria de sistemas",
+  "Computación",
+  "Matemáticas",
+  "Física",
+  "Biología",
+  "Facyt ai",
+  "ia de facyt",
+  "Ingenieria",
+  "Química",
+  "Computer science",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "Engineering",
+  "Mathematics",
+  "AI",
+  "Education",
+  "Segment ia facyt",
+  "Segment ai facyt",
+  "facyt",
+  "FACYT",
+  "Chat de ia",
+  "IA chat",
+  "ai assistant",
+  "gemini",
+  "chat-gpt",
+  "Llama",
+];
+const description =
+  "Segment es un asistente de IA especializado en enseñar ciencias de la educación superior tales como computación, matemáticas, física, biología, ingeniería y química";
+export const metadata: Metadata = {
+  title: "Segment",
+  description: description,
+  authors: {
+    name: "Samuel Nelo",
+    url: "https://samuel-nelo-portfolio.vercel.app",
+  },
+  keywords: keywords,
+  openGraph: {
+    title: "Segment",
+    description: description,
+
+    type: "website",
+    locale: "es_VE",
+    siteName: "Segment",
+    url: "https://segment-ai.vercel.app",
+    images: [
+      {
+        url: "/segment-logo+label.jpg",
+        width: 1600,
+        height: 900,
+        alt: "Segment",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Segment",
+    description: description,
+    images: ["/segment-logo+label.jpg"],
+  },
+  category: "IA tool",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +105,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${inter.className} ${monaSans.className} h-full antialiased dark overflow-x-hidden`}
     >
       <body className="min-h-full flex flex-col">

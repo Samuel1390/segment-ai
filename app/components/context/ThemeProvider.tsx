@@ -22,11 +22,9 @@ const getThemeFromLocal = () => {
 const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const [theme, setTheme] = useState(getThemeFromLocal());
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("theme", theme);
-      document.documentElement.classList.remove("dark", "light");
-      document.documentElement.classList.add(theme);
-    }
+    window.localStorage.setItem("theme", theme);
+    document.documentElement.classList.remove("dark", "light");
+    document.documentElement.classList.add(theme);
   }, [theme]);
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

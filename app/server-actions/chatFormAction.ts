@@ -1,0 +1,74 @@
+/*
+ Esta es la funcion principal, se encarga de: administrar los modelos, hacerlos compatibles entre ellos guardando el historial,
+ y devolver la respuesta al cliente, por ahora tenemos 3 modelos: gpt, llama y gemini, gpt y llama usan groq, gemini usa la api de google,
+ ambas apis tienen formatos para el LLM, aunque son similares, no son iguales, por lo que se debe hacer una conversion de formatos,
+ y para eso usamos el GenericHistory type, que es un tipo que representa el historial de mensajes en un formato comun,
+*/
+"use server";
+import fs from "node:fs";
+import path from "node:path";
+import groqAI from "./groq";
+import type { ModelErrorObj } from "../components/errors/Errors";
+import { MODELS } from "../constants";
+import type { Models } from "../types";
+import gemini from "./gemini";
+
+export type GenericHistory = {
+  // se encarga de hacer compatibles los historiales
+  role: "user" | "model";
+  content: string;
+};
+
+export type GenericResponse = // hace compatibles las respuestas
+  | ModelErrorObj
+  | {
+      output: string;
+      history: GenericHistory[];
+    };
+
+const ChatFormAction = async (
+  state: unknown,
+  formData: FormData,
+): Promise<GenericResponse> => {
+  // ESTE CODIGO ES UNA OBRA DE ARTE, EL QUE DIGA LO CONTRARIO VENGA Y ME LO DICE EN LA CARA
+  const model = formData.get("model") as Models;
+  const historyRaw = formData.get("history") as string;
+  const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
+  const instruccions = fs.readFileSync(
+    path.join(process.cwd(), "app/server-actions/ModelInstructions.md"),
+    "utf-8",
+  ); // obtenemos las instrucciones para que el modelo tenga contexto
+
+  // Aqui manejamos dos casos, el caso de groq y el caso de gemini
+  // Ambos modelos usan diferentes apis, por lo que se debe hacer una conversion de formatos para hacerlos compatibles
+  if (model === MODELS.gpt || model === MODELS.llama) {
+    const response = await groqAI(formData, instruccions, model);
+    if ("error" in response) {
+      return response; // { error: "500" | "401" | "404" | "429" | "408" | "503" | "504" } cada uno con su mensaje de error delarado en Errors.tsx
+    }
+    return {
+      output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
+      history: [
+        ...history,
+        { role: "user", content: formData.get("prompt") as string },
+        { role: "model", content: response.output }, // guardamos la respuesta en el historial
+      ],
+    };
+  } else if (model === MODELS.gemini) {
+    const response = await gemini(formData, instruccions, model);
+    if ("error" in response) {
+      return response;
+    }
+    return {
+      output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
+      history: [
+        ...history,
+        { role: "user", content: formData.get("prompt") as string },
+        { role: "model", content: response.output }, // guardamos la respuesta en el historial
+      ],
+    };
+  }
+  throw new Error("Modelo no soportado"); // Revisa los modelos en el frontend para debuggear
+};
+
+export default ChatFormAction;

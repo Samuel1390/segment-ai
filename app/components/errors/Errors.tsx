@@ -8,8 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
-export const GEMINI_ERRORS = [
+export const MODEL_ERRORS = [
   {
     code: "401",
     label: "Error de Autenticación",
@@ -26,13 +25,13 @@ export const GEMINI_ERRORS = [
     code: "429",
     label: "Límite de Consultas Agotado",
     description:
-      "Has superado la cuota de peticiones permitidas para el plan gratuito. Espera un minuto antes de intentar de nuevo.",
+      "Has superado la cuota de peticiones permitidas. Intentalo con otro modelo o espera un minuto.",
   },
   {
     code: "408",
     label: "Tiempo de Espera Agotado",
     description:
-      "La conexión con los servidores de Google tardó demasiado. Revisa tu estabilidad de red.",
+      "La conexión con los servidores del modelo tardó demasiado. Revisa tu estabilidad de red.",
   },
   {
     code: "451",
@@ -42,9 +41,9 @@ export const GEMINI_ERRORS = [
   },
   {
     code: "500",
-    label: "Error de Google AI",
+    label: "Error del Modelo",
     description:
-      "Ocurrió un error interno en los servidores de Gemini. No es un error de tu código.",
+      "Ocurrió un error interno en los servidores del modelo. Intentalo con otro modelo.",
   },
   {
     code: "503",
@@ -63,15 +62,17 @@ export const GEMINI_ERRORS = [
     description: "El modelo solicitado no existe.",
   },
 ] as const;
-export type GeminiErrorType = (typeof GEMINI_ERRORS)[number]["code"];
-interface GeminiErrorProps {
-  code: GeminiErrorType;
+
+export type ModelErrorType = (typeof MODEL_ERRORS)[number]["code"];
+export type ModelErrorObj = { error: ModelErrorType };
+interface ModelErrorProps {
+  code: ModelErrorType;
   open: boolean;
   setOpen: (value: boolean) => void;
 }
 
-function GeminiError({ code, open, setOpen }: GeminiErrorProps) {
-  const error = GEMINI_ERRORS.filter((error) => error.code == code)[0];
+function ModelError({ code, open, setOpen }: ModelErrorProps) {
+  const error = MODEL_ERRORS.filter((error) => error.code == code)[0];
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
@@ -86,4 +87,4 @@ function GeminiError({ code, open, setOpen }: GeminiErrorProps) {
     </AlertDialog>
   );
 }
-export default GeminiError;
+export default ModelError;
