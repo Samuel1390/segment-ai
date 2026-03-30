@@ -4,7 +4,7 @@ import ThemeButton from "./ThemeButton";
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import Logo from "./Logo";
-import { GithubIcon } from "lucide-react";
+import { GithubTwotoneIcon } from "@/components/icons/line-md-github-twotone";
 import useTheme from "@/app/hooks/useTheme";
 
 const Header = () => {
@@ -18,7 +18,7 @@ const Header = () => {
           <span>Segment</span>
         </div>
         <div className="hidden sm:flex items-center gap-2">
-          <GithubIcon
+          <GithubTwotoneIcon
             color={theme === "dark" ? "#fff" : "#000"}
             size={32}
             className="dark:hover:bg-neutral-700 
@@ -36,14 +36,14 @@ const Header = () => {
       </div>
       <div
         className={`absolute sm:hidden top-11 dark:bg-neutral-950 
-          bg-neutral-50 py-2 px-1/2
+          bg-neutral-50 py-2 px-1/2 px-3
           ${openMenu ? "flex" : "hidden"}
           justify-between items-center w-screen
           items-center gap-4`}
       >
         <ThemeButton />
         <Link href="" rel="noopener" target="_blank">
-          <GithubIcon />
+          <GithubTwotoneIcon />
         </Link>
       </div>
     </header>

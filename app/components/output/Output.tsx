@@ -17,7 +17,6 @@ import useTheme from "@/app/hooks/useTheme";
 
 const MarkdownRenderer = ({ content }: { content: string }) => {
   const { theme } = useTheme();
-  const cleanedContent = preprocessContent(content); // leer comentario en preprocessContent
 
   return (
     <div
@@ -76,43 +75,6 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
       </ReactMarkdown>
     </div>
   );
-};
-
-const preprocessContent = (content: string) => {
-  /*
-  Toda esta funcion esta generada por gemini,
-  es necesario una revision para asegurar que no haya ningun error.
-  Por los momentos muestra bien el marcado en el 90% de las ocasiones.
-  */
-  if (!content) return "";
-
-  // 1. Convertir delimitadores de bloque \[ \] a $$ $$
-  // y delimitadores de línea \( \) a $ $
-  let processed = content
-    .replace(/\\\[/g, "\n$$\n")
-    .replace(/\\\]/g, "\n$$\n")
-    .replace(/\\\(/g, "$")
-    .replace(/\\\)/g, "$");
-
-  // El paso 2 (Naked LaTeX) fue eliminado porque al detectar un símbolo como '_'
-  // o '\int', envolvía la línea completa en $. Esto convertía el texto normal
-  // (ej. "La derivada es \int...") en un bloque matemático entero borrando los espacios
-  // y usando fuente itálica para toda la oración.
-
-  // 3. Limpieza de artefactos (como las comas extra que mencionaste en x+1)
-  processed = processed.replace(/,x\+1,/g, "x+1");
-  // 4. Convertir fórmulas químicas a LaTeX
-  processed = processed.replace(
-    /(?<![\w\\])([A-Z][a-z]?\d+([A-Z][a-z]?\d*)*|(?<=\s)->(?=\s))/g,
-    (match) => {
-      // Si es una flecha -> la convertimos a flecha de reacción de LaTeX
-      if (match === "->") return "$\\ce{->}$";
-      // Si parece una fórmula química, la envolvemos en \ce
-      return `$\\ce{${match}}$`;
-    },
-  );
-
-  return processed;
 };
 
 export default MarkdownRenderer;

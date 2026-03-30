@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await audio.arrayBuffer());
 
-    console.log("Audio enviado: ", audio);
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
     const transcription = await groq.audio.transcriptions.create({
       file: await Groq.toFile(buffer, audio.name),
@@ -23,7 +22,6 @@ export async function POST(request: NextRequest) {
     });
     return NextResponse.json(transcription);
   } catch (e: any) {
-    console.log(e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
