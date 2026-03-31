@@ -13,11 +13,13 @@ import { MODELS } from "../constants";
 import type { Models } from "../types";
 import gemini from "./gemini";
 import type { ModelHashes } from "../constants";
+import cohereAi from "./cohere";
 
 export type GenericHistory = {
   // se encarga de hacer compatibles los historiales
   role: "user" | "model";
   content: string;
+  reasoning?: string;
 };
 
 export type GenericResponse = // hace compatibles las respuestas
@@ -39,24 +41,42 @@ const ChatFormAction = async (
     path.join(process.cwd(), "app/server-actions/ModelInstructions.md"),
     "utf-8",
   ); // obtenemos las instrucciones para que el modelo tenga contexto
+  const modelObj = getModelObj(model);
 
   // Aqui manejamos dos casos, el caso de groq y el caso de gemini
   // Ambos modelos usan diferentes apis, por lo que se debe hacer una conversion de formatos para hacerlos compatibles
-  if (getProvider(model) === "groq") {
-    const response = await groqAI(formData, instruccions, model);
+  if (modelObj.provider === "groq") {
+    const supportsReasoning = modelObj.supportsReasoning;
+    const response = await groqAI(
+      formData,
+      instruccions,
+      model,
+      supportsReasoning,
+    );
     if ("error" in response) {
       return response; // { error: "500" | "401" | "404" | "429" | "408" | "503" | "504" } cada uno con su mensaje de error delarado en Errors.tsx
     }
+
     return {
       output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
       history: [
         ...history,
         { role: "user", content: formData.get("prompt") as string },
-        { role: "model", content: response.output }, // guardamos la respuesta en el historial
+        {
+          role: "model",
+          content: response.output,
+          reasoning: response?.reasoning || undefined,
+        }, // guardamos la respuesta en el historial
       ],
     };
-  } else if (getProvider(model) === "gemini") {
-    const response = await gemini(formData, instruccions, model);
+  } else if (modelObj.provider === "gemini") {
+    const supportsReasoning = modelObj.supportsReasoning;
+    const response = await gemini(
+      formData,
+      instruccions,
+      model,
+      supportsReasoning,
+    );
     if ("error" in response) {
       return response;
     }
@@ -68,18 +88,37 @@ const ChatFormAction = async (
         { role: "model", content: response.output }, // guardamos la respuesta en el historial
       ],
     };
+  } else if (modelObj.provider === "cohere") {
+    const supportsReasoning = modelObj.supportsReasoning;
+    const response = await cohereAi(
+      formData,
+      instruccions,
+      model,
+      supportsReasoning,
+    );
+    if ("error" in response) {
+      return response;
+    }
+    return {
+      output: response, // Respuesta del modelo pero accedemos de una forma mas comoda
+      history: [
+        ...history,
+        { role: "user", content: formData.get("prompt") as string },
+        { role: "model", content: response }, // guardamos la respuesta en el historial
+      ],
+    };
   }
   throw new Error("Modelo no soportado"); // Revisa los modelos en el frontend para debuggear
 };
 
-function getProvider(modelHash: ModelHashes) {
+function getModelObj(modelHash: ModelHashes) {
   // Recupera el provaider para asegurarnos de que el modelo esta correcto en el frontend
   const modelObj = MODELS.find((mdl) => mdl.modelHash === modelHash);
   if (!modelObj) {
     // Si ves este error revisa el frontend, no deberia pasar (eso espero)
     throw new Error("Modelo no soportado");
   }
-  return modelObj.provider;
+  return modelObj;
 }
 
 export default ChatFormAction;

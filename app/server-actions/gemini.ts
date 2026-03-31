@@ -16,6 +16,7 @@ export async function gemini(
   formData: FormData,
   instruccions: string,
   model: ModelHashes,
+  supportsReasoning: boolean,
 ): Promise<GeminiReturnValues> {
   // Aqui obtenemos los datos del formulario
   const prompt = formData.get("prompt") as string;

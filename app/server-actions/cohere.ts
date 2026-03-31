@@ -7,10 +7,13 @@ import type {
 import type { GroqMessage, GroqResponse } from "../types";
 import { GenericHistory } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
+import { CohereClientV2 } from "cohere-ai";
+import { HttpResponsePromise } from "cohere-ai/core";
+import { V2ChatResponse } from "cohere-ai/api";
+import type { CohereMessage, CohereResponse } from "../types";
+const cohere = new CohereClientV2({ token: process.env.CO_API_KEY });
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-
-export async function groqAI(
+export async function cohereAi(
   formData: FormData,
   instruccions: string,
   model: ModelHashes,
@@ -21,35 +24,39 @@ export async function groqAI(
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
   const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
-  const response: Groq.Chat.Completions.ChatCompletion | ModelErrorObj =
-    await getGroqContent(
-      prompt,
-      history,
-      instruccions,
-      model,
-      supportsReasoning,
-    );
+  const response: V2ChatResponse | ModelErrorObj = await getCohereContent(
+    prompt,
+    history,
+    instruccions,
+    model,
+    supportsReasoning,
+  );
   if ("error" in response) {
     return response;
   }
-  console.log(response.choices[0].message.reasoning);
   // Devolvemos la respuesta en el formato correcto
+  const output =
+    response.message.content?.[0]?.type === "text"
+      ? response.message.content[0].text
+      : " ";
+  if (!output.trim()) {
+    console.warn("Respuesta vacia de cohere");
+  }
   return {
     completationUsage: response.usage,
-    output: response.choices[0].message.content ?? " ",
-    reasoning: response.choices[0].message.reasoning || " ",
+    output,
   };
 }
 
-export async function getGroqContent(
+export async function getCohereContent(
   prompt: string,
   history: GenericHistory[],
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
-): Promise<GroqResponse | ModelErrorObj> {
+): Promise<HttpResponsePromise<V2ChatResponse> | ModelErrorObj> {
   try {
-    const response = await groq.chat.completions.create({
+    const response: V2ChatResponse = await cohere.chat({
       messages: [
         {
           role: "system",
@@ -63,7 +70,6 @@ export async function getGroqContent(
       ],
       temperature: 0.2,
       model,
-      include_reasoning: supportsReasoning ? true : undefined,
     });
     return response;
   } catch (e: any) {
@@ -75,16 +81,17 @@ export async function getGroqContent(
   return { error: "500" };
 }
 
-function historyFormat(history: GenericHistory[]): GroqMessage[] {
+function historyFormat(history: GenericHistory[]): CohereMessage[] {
   // Aqui transformamos el historial para que sea compatible con groq
   const historyFormated = history.map((message) => {
     return {
       role:
-        message.role === "user" ? "user" : ("assistant" as GroqMessage["role"]),
+        message.role === "user"
+          ? "user"
+          : ("assistant" as CohereMessage["role"]),
       content: message.content || " ",
     };
   });
   return historyFormated;
 }
-
-export default groqAI;
+export default cohereAi;

@@ -4,13 +4,15 @@ export type ModelHashes =
   | "llama-3.1-8b-instant"
   | "llama-3.3-70b-versatile"
   | "groq/compound"
-  | "gemini-2.5-flash";
+  | "gemini-2.5-flash"
+  | "command-a-03-2025";
 
 type Models = Array<{
   label: string;
   description: string;
   modelHash: ModelHashes;
   provider: string;
+  supportsReasoning: boolean;
 }>;
 
 export const MODELS: Models = [
@@ -20,6 +22,7 @@ export const MODELS: Models = [
     description: "Rápido y eficiente",
     modelHash: "openai/gpt-oss-20b",
     provider: "groq",
+    supportsReasoning: true,
   },
   {
     label: "OpenAI GPT OSS 120B",
@@ -27,18 +30,21 @@ export const MODELS: Models = [
       "Modelo avanzado con altas capacidades de resolución de problemas complejos",
     modelHash: "openai/gpt-oss-120b",
     provider: "groq",
+    supportsReasoning: true,
   },
   {
     label: "Llama 3.1 8B",
     description: "Rápido y eficiente",
     modelHash: "llama-3.1-8b-instant",
     provider: "groq",
+    supportsReasoning: true,
   },
   {
     label: "Llama 3.3 70B",
     description: "Modelo llama avanzado, excelente para tareas complejas",
     modelHash: "llama-3.3-70b-versatile",
     provider: "groq",
+    supportsReasoning: false,
   },
   {
     label: "Compound",
@@ -46,11 +52,20 @@ export const MODELS: Models = [
       "Excelente para investigaciones en la web, integra gpt y llama",
     modelHash: "groq/compound",
     provider: "groq",
+    supportsReasoning: false,
   },
   {
     label: "Gemini 2.5 Flash",
     description: "Rápido y eficiente",
     modelHash: "gemini-2.5-flash",
     provider: "gemini",
+    supportsReasoning: false,
+  },
+  {
+    label: "Command A03 2025",
+    description: "Rápido y eficiente",
+    modelHash: "command-a-03-2025",
+    provider: "cohere",
+    supportsReasoning: false,
   },
 ];

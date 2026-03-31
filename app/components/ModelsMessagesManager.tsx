@@ -1,9 +1,23 @@
 "use client";
 import RenderUserMessage from "./RenderUserMessages";
-import type { GenericHistory } from "../server-actions/chatFormAction";
+import { ModelErrorObj } from "./errors/Errors";
 import Output from "./output/Output";
 import Logo from "./Logo";
 import { useEffect, useRef } from "react";
+import ReasoningBlock from "./ReasoningBlock";
+export type GenericHistory = {
+  // se encarga de hacer compatibles los historiales
+  role: "user" | "model";
+  content: string;
+  reasoning?: string;
+};
+
+export type GenericResponse = // hace compatibles las respuestas
+  | ModelErrorObj
+  | {
+      output: string;
+      history: GenericHistory[];
+    };
 
 type ModelsMessagesManagerProps = {
   history: GenericHistory[];
@@ -48,12 +62,26 @@ function ModelsMessagesManager({
                   ? (userMessageRef as any)
                   : undefined
               }
-              key={index}
+              key={`user-message-${index}`}
               userMessage={message.content}
             />
           );
         } else if (message.role === "model") {
-          return <Output key={index} content={message.content} />;
+          return (
+            <>
+              {/* Mensaje de razonamiento, funciona pero por ahora no lo mostraremos */}
+              {message?.reasoning &&
+                /*<ReasoningBlock
+                  key={`${index}-reasoning`}
+                  reasoning={message.reasoning}
+                />*/
+                null}
+              <Output
+                key={`model-message-${index}`}
+                content={message.content}
+              />
+            </>
+          );
         }
       })}
       {(isPending || hasError) && (

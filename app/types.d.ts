@@ -20,8 +20,18 @@ export type GeminiResponse = {
   history?: any;
   usageMetadata?: any;
 };
-export type GroqResponse = {
+export type GroqResponse = Groq.Chat.Completions.ChatCompletion & {
   output: string;
   history?: GroqMessage[];
   completationUsage?: CompletationUsage;
+  reasoning?: string;
+};
+export type CohereResponse = {
+  output: string;
+  history?: CohereMessage[];
+  reasoning?: string;
+};
+export type CohereMessage = {
+  role: "user" | "assistant" | "system";
+  content: string;
 };
