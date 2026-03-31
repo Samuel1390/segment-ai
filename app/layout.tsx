@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     url: "https://segment-ai.vercel.app",
     images: [
       {
-        url: "/segment-logo+label.jpg",
+        url: "segment-logo+label.jpg",
         width: 1600,
         height: 900,
         alt: "Segment",
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Segment",
     description: description,
-    images: ["/segment-logo+label.jpg"],
+    images: ["segment-logo+label.jpg"],
   },
   category: "IA tool",
   robots: {

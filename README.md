@@ -16,7 +16,8 @@ Multimodelo: Acceso a la potencia de Gemini 2.5 Flash para razonamiento lógico 
 
 Enfoque en FACYT: Conocimiento contextual sobre nuestra facultad y la Universidad de Carabobo.
 
-🛠️ Stack Tecnológico
+## 🛠️ Stack Tecnológico
+
 Segment está construido con las tecnologías más modernas para garantizar velocidad y escalabilidad:
 
 Tecnología Propósito
@@ -24,7 +25,7 @@ Tecnología Propósito
 [TypeScript](https://www.typescriptlang.org/) Tipado estático para un código robusto y mantenible.
 [Tailwind CSS](https://tailwindcss.com/) Estilizado moderno y responsivo con soporte para Modo Oscuro.
 [Gemini API](https://ai.google.dev/) Cerebro principal del asistente para tareas académicas.
-[Groq API](https://groq.com/) Procesamiento de audio ultra rápido y respuestas de baja latencia.
+[Groq API](https://groq.com/) Procesamiento de audio ultra rápido y acceso a modelos openai y llama.
 
 ## 💻 Configuración del Entorno (Local)
 
@@ -33,8 +34,8 @@ Sigue estos pasos para tener tu propia instancia de Segment corriendo en minutos
 1. Clonar e Instalar
 
 ```bash
-git clone https://github.com/tu-usuario/segment.git
-cd segment
+git clone https://github.com/Samuel1390/segment-ai.git
+cd segment-ai
 npm install
 ```
 
@@ -46,7 +47,7 @@ GEMINI_API_KEY=tu_api_key_de_gemini
 GROQ_API_KEY=tu_api_key_de_groq
 ```
 
-Nota: Puedes obtener tus llaves en AI Studio y Groq Console.
+Nota: Puedes obtener tus llaves en [AI Studio](https://aistudio.google.com/app/apikey) y [Groq Console](https://console.groq.com/keys).
 
 3. Ejecutar
 
@@ -65,8 +66,6 @@ Este proyecto es de código abierto y "hecho en casa". Como desarrollador enfoca
 Explora mi [Portfolio Profesional](https://samuel-nelo-portfolio.vercel.app/).
 
 Envíame un correo pulsando el icono de Gmail.
-
-¡Hagamos que la tecnología en la UC llegue al siguiente nivel! 🚀
 
 Desarrollado con ❤️ por Samuel Nelo - Estudiante de Computación, FACYT, UC.
 

@@ -1,15 +1,24 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Mic, Square } from "lucide-react";
 import useRecorder from "../hooks/useRecorder";
+import { cn } from "@/lib/utils";
 
 const Microphone = ({
   recorder,
+  setFeedbackMessage,
 }: {
   recorder: ReturnType<typeof useRecorder>;
+  setFeedbackMessage: (message: string) => void;
 }) => {
-  const { isRecording, startRecording, stopRecording } = recorder;
+  const { isRecording, startRecording, stopRecording, error } = recorder;
+
+  useEffect(() => {
+    if (error) {
+      setFeedbackMessage(error);
+    }
+  }, [error]);
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -18,18 +27,23 @@ const Microphone = ({
           <button
             type="button"
             onClick={startRecording}
-            className="flex items-center justify-center p-2 bg-black
-            text-white dark:bg-white dark:text-black rounded-full
-            transition-colors hover:opacity-80 shadow-md"
+            className={cn(
+              "flex items-center justify-center p-2 bg-black",
+              "text-white dark:bg-white dark:text-black rounded-full",
+              "transition-colors hover:opacity-80 shadow-md",
+            )}
             title="Iniciar grabación"
           >
-            <Mic size={22} />
+            <Mic size={20} />
           </button>
         ) : (
           <button
             type="button"
             onClick={stopRecording}
-            className="flex items-center justify-center p-2.5 bg-red-500 text-white rounded-full transition-all hover:bg-red-600 shadow-md animate-pulse"
+            className={cn(
+              "flex items-center justify-center p-2.5 bg-red-500",
+              "text-white rounded-full transition-all hover:bg-red-600 shadow-md animate-pulse",
+            )}
             title="Detener grabación"
           >
             <Square size={16} className="fill-current" />

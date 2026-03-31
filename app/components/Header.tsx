@@ -18,13 +18,7 @@ const Header = () => {
           <span>Segment</span>
         </div>
         <div className="hidden sm:flex items-center gap-2">
-          <GithubTwotoneIcon
-            color={theme === "dark" ? "#fff" : "#000"}
-            size={32}
-            className="dark:hover:bg-neutral-700 
-            hover:cursor-pointer hover:bg-neutral-200 dark:text-neutral-900
-            transition-all rounded-full p-1"
-          />
+          <GithubLink />
           <ThemeButton />
         </div>
         <button
@@ -36,18 +30,31 @@ const Header = () => {
       </div>
       <div
         className={`absolute sm:hidden top-11 dark:bg-neutral-950 
-          bg-neutral-50 py-2 px-1/2 px-3
+          bg-neutral-50 py-2 px-1/2 px-3 dark:text-neutral-200
           ${openMenu ? "flex" : "hidden"}
           justify-between items-center w-screen
           items-center gap-4`}
       >
         <ThemeButton />
-        <Link href="" rel="noopener" target="_blank">
-          <GithubTwotoneIcon />
-        </Link>
+        <GithubLink />
       </div>
     </header>
   );
 };
+
+function GithubLink() {
+  return (
+    <Link
+      href="https://github.com/Samuel1390/segment-ai"
+      rel="noopener"
+      target="_blank"
+    >
+      <GithubTwotoneIcon
+        size={32}
+        className="dark:hover:bg-neutral-700 hover:cursor-pointer hover:bg-neutral-200 dark:text-neutral-200 transition-all rounded-full p-1"
+      />
+    </Link>
+  );
+}
 
 export default Header;

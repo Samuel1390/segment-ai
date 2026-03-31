@@ -1,5 +1,56 @@
-export const MODELS = {
-  gpt: "openai/gpt-oss-20b",
-  llama: "llama-3.3-70b-versatile",
-  gemini: "gemini-2.5-flash",
-} as const;
+export type ModelHashes =
+  | "openai/gpt-oss-20b"
+  | "openai/gpt-oss-120b"
+  | "llama-3.1-8b-instant"
+  | "llama-3.3-70b-versatile"
+  | "groq/compound"
+  | "gemini-2.5-flash";
+
+type Models = Array<{
+  label: string;
+  description: string;
+  modelHash: ModelHashes;
+  provider: string;
+}>;
+
+export const MODELS: Models = [
+  {
+    // Para mas detalles sobre los modelos de groq visitar: https://console.groq.com/docs/models
+    label: "OpenAI GPT OSS 20B",
+    description: "Rápido y eficiente",
+    modelHash: "openai/gpt-oss-20b",
+    provider: "groq",
+  },
+  {
+    label: "OpenAI GPT OSS 120B",
+    description:
+      "Modelo avanzado con altas capacidades de resolución de problemas complejos",
+    modelHash: "openai/gpt-oss-120b",
+    provider: "groq",
+  },
+  {
+    label: "Llama 3.1 8B",
+    description: "Rápido y eficiente",
+    modelHash: "llama-3.1-8b-instant",
+    provider: "groq",
+  },
+  {
+    label: "Llama 3.3 70B",
+    description: "Modelo llama avanzado, excelente para tareas complejas",
+    modelHash: "llama-3.3-70b-versatile",
+    provider: "groq",
+  },
+  {
+    label: "Compound",
+    description:
+      "Excelente para investigaciones en la web, integra gpt y llama",
+    modelHash: "groq/compound",
+    provider: "groq",
+  },
+  {
+    label: "Gemini 2.5 Flash",
+    description: "Rápido y eficiente",
+    modelHash: "gemini-2.5-flash",
+    provider: "gemini",
+  },
+];

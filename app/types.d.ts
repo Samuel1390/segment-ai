@@ -1,7 +1,9 @@
 import { CompletationUsage } from "groq";
 import { MODELS } from "./constants";
 
-export type Models = (typeof MODELS)[keyof typeof MODELS];
+export type DeepValues<T> = T extends object ? T[keyof T] : T;
+
+export type Models = DeepValues<typeof MODELS>;
 
 export interface GroqMessage {
   role: "user" | "assistant" | "system";
@@ -15,11 +17,11 @@ export interface GeminiMessage {
 export type GeminiResponse = {
   output: string;
   imageUrl?: string;
-  history: Message[];
-  usageMetadata?: UsageMetadata;
+  history?: any;
+  usageMetadata?: any;
 };
 export type GroqResponse = {
   output: string;
-  history: GroqMessage[];
+  history?: GroqMessage[];
   completationUsage?: CompletationUsage;
 };

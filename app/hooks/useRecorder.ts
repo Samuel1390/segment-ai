@@ -5,6 +5,7 @@ export const useRecorder = () => {
   const [audioURL, setAudioURL] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [duration, setDuration] = useState<number>(0); // en milisegundos
+  const [error, setError] = useState<string | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -42,11 +43,14 @@ export const useRecorder = () => {
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
+      setError(
+        "Error al acceder al micrófono, por favor habilita el micrófono en la configuración de tu navegador",
+      );
       console.error("Error accessing microphone:", error);
     }
   }, []);
 
-  const stopRecording = useCallback(() => {
+  const stopRecording = () => {
     if (
       mediaRecorderRef.current &&
       mediaRecorderRef.current.state !== "inactive"
@@ -54,7 +58,7 @@ export const useRecorder = () => {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
     }
-  }, []);
+  };
 
   return {
     isRecording,
@@ -63,6 +67,7 @@ export const useRecorder = () => {
     audioURL,
     audioBlob,
     duration,
+    error,
   };
 };
 

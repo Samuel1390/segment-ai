@@ -15,12 +15,22 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await audio.arrayBuffer());
 
     const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-    const transcription = await groq.audio.transcriptions.create({
-      file: await Groq.toFile(buffer, audio.name),
-      model: "whisper-large-v3",
-      response_format: "json",
-    });
-    return NextResponse.json(transcription);
+
+    try {
+      const transcription = await groq.audio.transcriptions.create({
+        file: await Groq.toFile(buffer, audio.name),
+        model: "whisper-large-v3",
+        response_format: "json",
+      });
+      return NextResponse.json(transcription);
+    } catch {
+      const transcription = await groq.audio.transcriptions.create({
+        file: await Groq.toFile(buffer, audio.name),
+        model: "whisper-large-v3-turbo",
+        response_format: "json",
+      });
+      return NextResponse.json(transcription);
+    }
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

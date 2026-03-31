@@ -4,6 +4,7 @@ import type { GeminiMessage, GeminiResponse } from "../types";
 import type { Models } from "../types";
 import { ModelErrorType, ModelErrorObj } from "../components/errors/Errors";
 import { GenericHistory } from "./chatFormAction";
+import { ModelHashes } from "../constants";
 
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
@@ -14,15 +15,16 @@ export type GeminiReturnValues =
 export async function gemini(
   formData: FormData,
   instruccions: string,
-  model: Models,
+  model: ModelHashes,
 ): Promise<GeminiReturnValues> {
+  // Aqui obtenemos los datos del formulario
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
   const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
   const geminiModel = genai.getGenerativeModel({
     model: model,
-    systemInstruction: instruccions,
+    systemInstruction: instruccions, // Le pasamos las intruccuines al modelo
 
     generationConfig: {
       temperature: 0.7,
@@ -39,19 +41,14 @@ async function generateText(
 ): Promise<GeminiReturnValues> {
   try {
     const chat = model.startChat({
-      history: formatHistory(history),
+      history: formatHistory(history), // Formateamos el historial para que sea compatible con gemini, revisar la funcion formatHistory
     });
     const result = await chat.sendMessage(prompt);
     const response = await result.response;
-
+    // la respuesta contiene datos interesantes que podemos usar mas tarde, como el uso de tokens
     return {
       usageMetadata: response.usageMetadata,
-      output: response.text(),
-      history: [
-        ...formatHistory(history).slice(0, -2),
-        { role: "user", parts: [{ text: prompt }] },
-        { role: "model", parts: [{ text: response.text() }] },
-      ],
+      output: response.text() || " ",
     };
   } catch (e: any) {
     console.error("Gemini API Error:", e);
@@ -60,10 +57,11 @@ async function generateText(
 }
 
 function formatHistory(history: GenericHistory[]): GeminiMessage[] {
+  // Aqui transformamos el historial para que sea compatible con gemini
   return history.map((message) => {
     return {
       role: message.role, // "model" | "user"
-      parts: [{ text: message.content }],
+      parts: [{ text: message.content || " " }],
     };
   });
 }

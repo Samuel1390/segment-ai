@@ -76,5 +76,43 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
     </div>
   );
 };
+// este codigo fue generado por gemini, aun es necesario revisar que este correcto
+const preprocessContent = (content: string) => {
+  if (!content) return "";
+
+  // 1. Convertir delimitadores de bloque \[ \] a $$ $$
+  // y delimitadores de línea \( \) a $ $
+  let processed = content
+    .replace(/\\\[/g, "\n$$\n")
+    .replace(/\\\]/g, "\n$$\n")
+    .replace(/\\\(/g, "$")
+    .replace(/\\\)/g, "$");
+
+  // 2. Detectar "Naked LaTeX": Busca líneas que tengan comandos matemáticos
+  // pero que no tengan dólares.
+  const lines = processed.split("\n");
+  processed = lines
+    .map((line) => {
+      // Si la línea tiene comandos típicos pero no tiene $
+      const hasMathCommand =
+        /\\int|\\frac|\\sum|\\sqrt|\\alpha|\\beta|\\gamma|\\infty|\\theta|\\pi|\\cdot|\\times|\\partial/.test(
+          line,
+        );
+      const hasSubscript = /_{?\d+}?|\^{?\d+}?/.test(line); // Detecta I_{2} o x^{2}
+      const alreadyHasDollars = line.includes("$");
+
+      if ((hasMathCommand || hasSubscript) && !alreadyHasDollars) {
+        // Envolvemos la línea entera o el fragmento detectado
+        return `$${line.trim()}$`;
+      }
+      return line;
+    })
+    .join("\n");
+
+  // 3. Limpieza de artefactos (como las comas extra que mencionaste en x+1)
+  processed = processed.replace(/,x\+1,/g, "x+1");
+
+  return processed;
+};
 
 export default MarkdownRenderer;

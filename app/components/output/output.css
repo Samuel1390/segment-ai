@@ -104,6 +104,10 @@
 }
 
 /* --- OPTIMIZACIÓN MATEMÁTICAS (KATEX) --- */
+
+.katex {
+  padding: 10px;
+}
 .model-output .katex-display {
   overflow-x: auto;
   overflow-y: hidden;

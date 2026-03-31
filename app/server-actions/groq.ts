@@ -10,14 +10,14 @@ import type {
 } from "../components/errors/Errors";
 import type { GroqMessage, GroqResponse } from "../types";
 import { GenericHistory } from "./chatFormAction";
+import type { ModelHashes } from "../constants";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
-type GroqModels = Exclude<Models, "gemini-2.5-flash">;
 
 export async function groqAI(
   formData: FormData,
   instruccions: string,
-  model: GroqModels,
+  model: ModelHashes,
 ): Promise<GroqResponse | ModelErrorObj> {
   // Obtenemos los datos del formulario
   const prompt = formData.get("prompt") as string;
@@ -31,12 +31,7 @@ export async function groqAI(
   // Devolvemos la respuesta en el formato correcto
   return {
     completationUsage: response.usage,
-    output: response.choices[0].message.content ?? "",
-    history: [
-      ...historyFormat(history).slice(0, -2), // Quitamos los ultimos dos mensajes del historial para evitar duplicados
-      { role: "user", content: prompt }, // Agregamos el mensaje actual del usuario
-      { role: "assistant", content: response.choices[0].message.content ?? "" }, // Aqui es donde se encuentra la respuesta del modelo
-    ],
+    output: response.choices[0].message.content ?? " ",
   };
 }
 
@@ -44,7 +39,7 @@ export async function getGroqContent(
   prompt: string,
   history: GenericHistory[],
   instruccions: string,
-  model: GroqModels,
+  model: ModelHashes,
 ): Promise<APIPromise<Groq.Chat.Completions.ChatCompletion> | ModelErrorObj> {
   try {
     return await groq.chat.completions.create({
@@ -60,6 +55,7 @@ export async function getGroqContent(
         },
       ],
       model,
+      include_reasoning: true,
     });
   } catch (e: any) {
     console.log(e);
@@ -76,7 +72,7 @@ function historyFormat(history: GenericHistory[]): GroqMessage[] {
     return {
       role:
         message.role === "user" ? "user" : ("assistant" as GroqMessage["role"]),
-      content: message.content,
+      content: message.content || " ",
     };
   });
   return historyFormated;

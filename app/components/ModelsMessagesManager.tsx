@@ -37,13 +37,17 @@ function ModelsMessagesManager({
   }, [lastUserMessage, history.length, isPending, hasError]);
 
   return (
-    <article className="mb-50 w-full overflow-y-hidden overflow-x-auto lg:px-0 px-2 pb-10">
+    <article className="mb-28 w-full overflow-y-hidden overflow-x-auto lg:px-0 px-2 pb-10">
       {history.map((message, index) => {
         if (message.role === "user") {
           const isLastRenderedUserMsg = index >= history.length - 2;
           return (
             <RenderUserMessage
-              ref={isLastRenderedUserMsg && !isPending && !hasError ? (userMessageRef as any) : undefined}
+              ref={
+                isLastRenderedUserMsg && !isPending && !hasError
+                  ? (userMessageRef as any)
+                  : undefined
+              }
               key={index}
               userMessage={message.content}
             />
@@ -61,7 +65,7 @@ function ModelsMessagesManager({
         />
       )}
       {isPending && (
-        <div className="flex gap-2 items-center mb-50">
+        <div className="flex gap-2 items-center">
           <Logo size={16} className="animate-spin" />
           <p className="text-sm dark:text-neutral-300 animate-pulse">
             Pensando...

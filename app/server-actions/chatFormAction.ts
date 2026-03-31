@@ -12,6 +12,7 @@ import type { ModelErrorObj } from "../components/errors/Errors";
 import { MODELS } from "../constants";
 import type { Models } from "../types";
 import gemini from "./gemini";
+import type { ModelHashes } from "../constants";
 
 export type GenericHistory = {
   // se encarga de hacer compatibles los historiales
@@ -31,7 +32,7 @@ const ChatFormAction = async (
   formData: FormData,
 ): Promise<GenericResponse> => {
   // ESTE CODIGO ES UNA OBRA DE ARTE, EL QUE DIGA LO CONTRARIO VENGA Y ME LO DICE EN LA CARA
-  const model = formData.get("model") as Models;
+  const model = formData.get("model") as ModelHashes;
   const historyRaw = formData.get("history") as string;
   const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
   const instruccions = fs.readFileSync(
@@ -41,7 +42,7 @@ const ChatFormAction = async (
 
   // Aqui manejamos dos casos, el caso de groq y el caso de gemini
   // Ambos modelos usan diferentes apis, por lo que se debe hacer una conversion de formatos para hacerlos compatibles
-  if (model === MODELS.gpt || model === MODELS.llama) {
+  if (getProvider(model) === "groq") {
     const response = await groqAI(formData, instruccions, model);
     if ("error" in response) {
       return response; // { error: "500" | "401" | "404" | "429" | "408" | "503" | "504" } cada uno con su mensaje de error delarado en Errors.tsx
@@ -54,7 +55,7 @@ const ChatFormAction = async (
         { role: "model", content: response.output }, // guardamos la respuesta en el historial
       ],
     };
-  } else if (model === MODELS.gemini) {
+  } else if (getProvider(model) === "gemini") {
     const response = await gemini(formData, instruccions, model);
     if ("error" in response) {
       return response;
@@ -70,5 +71,15 @@ const ChatFormAction = async (
   }
   throw new Error("Modelo no soportado"); // Revisa los modelos en el frontend para debuggear
 };
+
+function getProvider(modelHash: ModelHashes) {
+  // Recupera el provaider para asegurarnos de que el modelo esta correcto en el frontend
+  const modelObj = MODELS.find((mdl) => mdl.modelHash === modelHash);
+  if (!modelObj) {
+    // Si ves este error revisa el frontend, no deberia pasar (eso espero)
+    throw new Error("Modelo no soportado");
+  }
+  return modelObj.provider;
+}
 
 export default ChatFormAction;
