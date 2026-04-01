@@ -1,3 +1,10 @@
+import React from "react";
+import { MetaIcon } from "@/components/icons/simple-icons-meta";
+import { GooglegeminiIcon } from "@/components/icons/simple-icons-googlegemini";
+import { OpenaiIcon } from "@/components/icons/simple-icons-openai";
+import CohereIcon from "@/components/icons/cohere-icon";
+import GroqIcon from "@/components/icons/groq-icon";
+
 export type ModelHashes =
   | "openai/gpt-oss-20b"
   | "openai/gpt-oss-120b"
@@ -13,6 +20,7 @@ type Models = Array<{
   modelHash: ModelHashes;
   provider: string;
   supportsReasoning: boolean;
+  icon?: React.ReactNode;
 }>;
 
 export const MODELS: Models = [
@@ -23,6 +31,9 @@ export const MODELS: Models = [
     modelHash: "openai/gpt-oss-20b",
     provider: "groq",
     supportsReasoning: true,
+    icon: React.createElement(OpenaiIcon, {
+      className: "size-4 stroke-none outline-none fill-black dark:fill-white",
+    }),
   },
   {
     label: "OpenAI GPT OSS 120B",
@@ -31,6 +42,9 @@ export const MODELS: Models = [
     modelHash: "openai/gpt-oss-120b",
     provider: "groq",
     supportsReasoning: true,
+    icon: React.createElement(OpenaiIcon, {
+      className: "size-4 stroke-none outline-none fill-black dark:fill-white",
+    }),
   },
   {
     label: "Llama 3.1 8B",
@@ -38,6 +52,10 @@ export const MODELS: Models = [
     modelHash: "llama-3.1-8b-instant",
     provider: "groq",
     supportsReasoning: true,
+    icon: React.createElement(MetaIcon, {
+      className:
+        "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",
+    }),
   },
   {
     label: "Llama 3.3 70B",
@@ -45,6 +63,10 @@ export const MODELS: Models = [
     modelHash: "llama-3.3-70b-versatile",
     provider: "groq",
     supportsReasoning: false,
+    icon: React.createElement(MetaIcon, {
+      className:
+        "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",
+    }),
   },
   {
     label: "Compound",
@@ -53,6 +75,7 @@ export const MODELS: Models = [
     modelHash: "groq/compound",
     provider: "groq",
     supportsReasoning: false,
+    icon: React.createElement(GroqIcon, {}),
   },
   {
     label: "Gemini 2.5 Flash",
@@ -60,6 +83,9 @@ export const MODELS: Models = [
     modelHash: "gemini-2.5-flash",
     provider: "gemini",
     supportsReasoning: false,
+    icon: React.createElement(GooglegeminiIcon, {
+      className: "size-4 stroke-none fill-neutral-700 dark:fill-neutral-300",
+    }),
   },
   {
     label: "Command A03 2025",
@@ -67,5 +93,6 @@ export const MODELS: Models = [
     modelHash: "command-a-03-2025",
     provider: "cohere",
     supportsReasoning: false,
+    icon: React.createElement(CohereIcon, {}),
   },
 ];

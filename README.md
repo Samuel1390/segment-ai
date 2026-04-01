@@ -47,7 +47,7 @@ GEMINI_API_KEY=tu_api_key_de_gemini
 GROQ_API_KEY=tu_api_key_de_groq
 ```
 
-Nota: Puedes obtener tus llaves en [AI Studio](https://aistudio.google.com/app/apikey) y [Groq Console](https://console.groq.com/keys).
+Nota: Puedes obtener tus llaves en [AI Studio](https://aistudio.google.com/app/apikey), [Groq Console](https://console.groq.com/keys) y [Cohere Console](https://dashboard.cohere.com/api-keys).
 
 3. Ejecutar
 

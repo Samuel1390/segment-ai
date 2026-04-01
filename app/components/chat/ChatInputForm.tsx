@@ -109,7 +109,10 @@ export default function ChatInputForm({
                     className="hover:cursor-pointer"
                     description={mdl.description}
                   >
-                    {mdl.label}
+                    <div className="flex items-center gap-2">
+                      {mdl?.icon && mdl.icon}
+                      {mdl.label}
+                    </div>
                   </SelectItem>
                 );
               })}
