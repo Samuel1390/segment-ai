@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter, Mona_Sans } from "next/font/google";
-import Header from "./components/Header";
-import ThemeProvider from "./components/context/ThemeProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -108,13 +106,7 @@ export default function RootLayout({
       lang="es"
       className={`${inter.className} ${monaSans.className} h-full antialiased dark overflow-x-hidden`}
     >
-      <body className="min-h-full flex flex-col">
-        <ThemeProvider>
-          <Header />
-
-          {children}
-        </ThemeProvider>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
