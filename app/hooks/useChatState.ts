@@ -1,16 +1,37 @@
-import { useState, useActionState, useEffect, startTransition, RefObject } from "react";
-import ChatFormAction, { GenericHistory } from "../server-actions/chatFormAction";
+import {
+  useState,
+  useActionState,
+  useEffect,
+  startTransition,
+  RefObject,
+} from "react";
+import ChatFormAction, {
+  GenericHistory,
+  HistoryData,
+} from "../server-actions/chatFormAction";
+
+export type LastUserMessage = {
+  prompt: string;
+  files?: File[];
+  filesNames?: string[];
+};
 
 export function useChatState() {
   const [state, action, isPending] = useActionState(ChatFormAction, null);
   const [openErrorModal, setOpenErrorModal] = useState(false);
   const [history, setHistory] = useState<GenericHistory[]>([]);
+  const [historyData, setHistoryData] = useState<HistoryData[]>([]);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
-  const [lastUserMessage, setLastUserMessage] = useState<string>("");
+  const [lastUserMessage, setLastUserMessage] = useState<LastUserMessage>({
+    prompt: "",
+  });
 
   useEffect(() => {
     if (state && "history" in state) {
       setHistory(state.history);
+    }
+    if (state && "historyData" in state) {
+      setHistoryData(state.historyData);
     }
     if (state && "error" in state) {
       setOpenErrorModal(true);
@@ -25,12 +46,15 @@ export function useChatState() {
     }
   }, [feedbackMessage]);
 
-  const setLastMessage = (msg: string) => setLastUserMessage(msg);
+  const setLastMessage = (msg: LastUserMessage) => setLastUserMessage(msg);
 
   const retry = (formRef: RefObject<HTMLFormElement | null>) => {
     if (!formRef.current) return;
     const formData = new FormData(formRef.current);
-    formData.set("prompt", lastUserMessage);
+    formData.set("prompt", lastUserMessage.prompt);
+    if (lastUserMessage.files && lastUserMessage.files.length > 0) {
+      lastUserMessage.files.forEach((file) => formData.append("files", file));
+    }
     startTransition(() => {
       action(formData);
     });
@@ -48,5 +72,7 @@ export function useChatState() {
     lastUserMessage,
     setLastMessage,
     retry,
+    historyData,
+    setHistoryData,
   };
 }

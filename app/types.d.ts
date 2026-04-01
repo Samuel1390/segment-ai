@@ -1,4 +1,5 @@
 import { CompletationUsage } from "groq";
+import { Usage } from "cohere-ai/api";
 import { MODELS } from "./constants";
 
 export type DeepValues<T> = T extends object ? T[keyof T] : T;
@@ -30,6 +31,7 @@ export type CohereResponse = {
   output: string;
   history?: CohereMessage[];
   reasoning?: string;
+  completationUsage?: Usage;
 };
 export type CohereMessage = {
   role: "user" | "assistant" | "system";

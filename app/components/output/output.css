@@ -72,6 +72,7 @@
   border-collapse: collapse;
   font-size: 0.95rem;
   background-color: var(--bg-color);
+  overflow-x: auto;
 }
 
 .model-output th {
@@ -102,21 +103,28 @@
 .model-output table {
   border: none;
 }
-
+.model-output p,
+strong {
+  margin-block: 10px;
+  padding-block: 10px;
+}
 /* --- OPTIMIZACIÓN MATEMÁTICAS (KATEX) --- */
 
 .katex {
   margin-block: 12px;
 }
 .model-output .katex {
-  font-size: 1.2em !important;
+  padding-inline: 10px;
+  font-size: 1.4em !important;
 }
 
 /* Las fórmulas en bloque (centradas) se ven aún más grandes para resaltar */
 .model-output .katex-display {
-  font-size: 1.3em !important;
+  font-size: 1.4em !important;
   margin-block: 1.5rem;
-  padding: 10px;
+  padding-inline: 10px;
+  margin-block: 40px !important;
+  padding-block: 20px;
   overflow-x: auto;
 }
 .model-output .katex-display > .katex {

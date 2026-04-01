@@ -7,6 +7,7 @@ export type FormState = {
   prompt: string;
   tool: string;
   model: ModelHashes;
+  files: File[];
 };
 
 export function useChatInput(setFeedbackMessage: (msg: string) => void) {
@@ -14,6 +15,7 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
     prompt: "",
     tool: "text",
     model: MODELS[0].modelHash,
+    files: [],
   });
   const [sendIsAllowed, setSendIsAlowed] = useState(false);
   const recorder = useRecorder();
@@ -51,6 +53,10 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
     setSendIsAlowed(value.trim().length > 0);
   };
 
+  const handleFilesChange = (files: File[]) => {
+    setForm((prev) => ({ ...prev, files }));
+  };
+
   const handleToolChange = (value: string) => {
     setForm((prev) => ({ ...prev, tool: value }));
   };
@@ -72,5 +78,6 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
     handleToolChange,
     setModel,
     clearPrompt,
+    handleFilesChange,
   };
 }

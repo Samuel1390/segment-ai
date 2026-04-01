@@ -25,10 +25,18 @@ const Chat = () => {
     lastUserMessage,
     setLastMessage,
     retry,
+    historyData,
   } = useChatState();
 
-  const { form, recorder, sendIsAllowed, handleChange, setModel, clearPrompt } =
-    useChatInput(setFeedbackMessage);
+  const {
+    form,
+    recorder,
+    sendIsAllowed,
+    handleChange,
+    setModel,
+    clearPrompt,
+    handleFilesChange,
+  } = useChatInput(setFeedbackMessage);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -43,7 +51,11 @@ const Chat = () => {
   };
 
   const handleSubmit = () => {
-    setLastMessage(form.prompt);
+    setLastMessage({
+      prompt: form.prompt,
+      files: form.files,
+      filesNames: form.files.map((file) => file.name),
+    });
     clearPrompt();
   };
 
@@ -62,19 +74,21 @@ const Chat = () => {
         />
       )}
 
-      {lastUserMessage ? (
+      {lastUserMessage.prompt ? (
         <ModelsMessagesManager
           history={history}
           isPending={isPending}
           lastUserMessage={lastUserMessage}
           hasError={!!(state && "error" in state)}
           onRetry={() => retry(formRef)}
+          historyData={historyData}
         />
       ) : (
         <ChatGreeting />
       )}
 
       <ChatInputForm
+        historyData={historyData}
         formRef={formRef}
         action={action}
         handleSubmit={handleSubmit}
@@ -83,6 +97,8 @@ const Chat = () => {
         handleChange={handleChange}
         historyString={JSON.stringify(history)}
         model={form.model}
+        files={form.files}
+        handleFilesChange={handleFilesChange}
         setModel={setModel}
         isPending={isPending}
         sendIsAllowed={sendIsAllowed}

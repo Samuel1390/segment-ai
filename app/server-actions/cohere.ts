@@ -5,6 +5,7 @@ import type {
   ModelErrorObj,
 } from "../components/errors/Errors";
 import type { GroqMessage, GroqResponse } from "../types";
+import handleFiles from "../utils/handleFiles";
 import { GenericHistory } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
 import { CohereClientV2 } from "cohere-ai";
@@ -18,34 +19,46 @@ export async function cohereAi(
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
-): Promise<GroqResponse | ModelErrorObj> {
+): Promise<CohereResponse | ModelErrorObj> {
   // Obtenemos los datos del formulario
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
   const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
-  const response: V2ChatResponse | ModelErrorObj = await getCohereContent(
-    prompt,
-    history,
-    instruccions,
-    model,
-    supportsReasoning,
-  );
-  if ("error" in response) {
-    return response;
+  const files: File[] = formData.getAll("files") as File[];
+
+  const weHaveFiles = files.length > 0;
+
+  try {
+    const response: V2ChatResponse | ModelErrorObj = await getCohereContent(
+      weHaveFiles ? await handleFiles(files, prompt) : prompt,
+      history,
+      instruccions,
+      model,
+      supportsReasoning,
+    );
+    if ("error" in response) {
+      return response;
+    }
+    // Devolvemos la respuesta en el formato correcto
+    const output =
+      response.message.content?.[0]?.type === "text"
+        ? response.message.content[0].text
+        : " ";
+    if (!output.trim()) {
+      console.warn("Respuesta vacía de Cohere");
+    }
+    return {
+      completationUsage: response.usage,
+      output,
+    };
+  } catch (e: any) {
+    console.log(e);
+    if (e?.status) {
+      return { error: (e?.status as ModelErrorType) || "500" };
+    }
   }
-  // Devolvemos la respuesta en el formato correcto
-  const output =
-    response.message.content?.[0]?.type === "text"
-      ? response.message.content[0].text
-      : " ";
-  if (!output.trim()) {
-    console.warn("Respuesta vacia de cohere");
-  }
-  return {
-    completationUsage: response.usage,
-    output,
-  };
+  return { error: "500" };
 }
 
 export async function getCohereContent(

@@ -20,7 +20,7 @@ type Models = Array<{
   modelHash: ModelHashes;
   provider: string;
   supportsReasoning: boolean;
-  icon?: React.ReactNode;
+  icon?: React.JSX.Element;
 }>;
 
 export const MODELS: Models = [
@@ -51,7 +51,7 @@ export const MODELS: Models = [
     description: "Rápido y eficiente",
     modelHash: "llama-3.1-8b-instant",
     provider: "groq",
-    supportsReasoning: true,
+    supportsReasoning: false,
     icon: React.createElement(MetaIcon, {
       className:
         "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",

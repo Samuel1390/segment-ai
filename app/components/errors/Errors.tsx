@@ -10,6 +10,11 @@ import {
 } from "@/components/ui/alert-dialog";
 export const MODEL_ERRORS = [
   {
+    code: "413",
+    label: "Payload demasiado grande",
+    description: "El payload es demasiado grande para ser procesado.",
+  },
+  {
     code: "401",
     label: "Error de Autenticación",
     description:

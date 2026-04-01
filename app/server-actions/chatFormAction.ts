@@ -5,15 +5,15 @@
  y para eso usamos el GenericHistory type, que es un tipo que representa el historial de mensajes en un formato comun,
 */
 "use server";
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
 import groqAI from "./groq";
 import type { ModelErrorObj } from "../components/errors/Errors";
 import { MODELS } from "../constants";
-import type { Models } from "../types";
 import gemini from "./gemini";
 import type { ModelHashes } from "../constants";
 import cohereAi from "./cohere";
+import { nanoid } from "nanoid";
 
 export type GenericHistory = {
   // se encarga de hacer compatibles los historiales
@@ -22,11 +22,23 @@ export type GenericHistory = {
   reasoning?: string;
 };
 
+// Datos adicionales del historial para manejar en el frontend
+// Estos datos no deben pasarse al modelo
+export type HistoryData = {
+  prompt: string;
+  files?: File[];
+  filesNames?: string[];
+  messageId: string;
+  model: ModelHashes;
+  supportsReasoning: boolean;
+};
+
 export type GenericResponse = // hace compatibles las respuestas
   | ModelErrorObj
   | {
       output: string;
       history: GenericHistory[];
+      historyData: HistoryData[];
     };
 
 const ChatFormAction = async (
@@ -34,10 +46,20 @@ const ChatFormAction = async (
   formData: FormData,
 ): Promise<GenericResponse> => {
   // ESTE CODIGO ES UNA OBRA DE ARTE, EL QUE DIGA LO CONTRARIO VENGA Y ME LO DICE EN LA CARA
+  const prompt = formData.get("prompt") as string;
+  const files = formData.getAll("files") as File[];
+  const filesNames = files.map((file) => file.name);
   const model = formData.get("model") as ModelHashes;
   const historyRaw = formData.get("history") as string;
   const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
-  const instruccions = fs.readFileSync(
+  const messageId = nanoid();
+
+  const historyDataRaw = formData.get("historyData") as string;
+  const historyData: HistoryData[] = historyDataRaw
+    ? JSON.parse(historyDataRaw)
+    : [];
+
+  const instruccions = await fs.readFile(
     path.join(process.cwd(), "app/server-actions/ModelInstructions.md"),
     "utf-8",
   ); // obtenemos las instrucciones para que el modelo tenga contexto
@@ -68,6 +90,17 @@ const ChatFormAction = async (
           reasoning: response?.reasoning || undefined,
         }, // guardamos la respuesta en el historial
       ],
+      historyData: [
+        ...historyData,
+        {
+          prompt,
+          files,
+          filesNames,
+          messageId,
+          model,
+          supportsReasoning,
+        },
+      ],
     };
   } else if (modelObj.provider === "gemini") {
     const supportsReasoning = modelObj.supportsReasoning;
@@ -87,6 +120,17 @@ const ChatFormAction = async (
         { role: "user", content: formData.get("prompt") as string },
         { role: "model", content: response.output }, // guardamos la respuesta en el historial
       ],
+      historyData: [
+        ...historyData,
+        {
+          prompt,
+          files,
+          filesNames,
+          model,
+          messageId,
+          supportsReasoning,
+        },
+      ],
     };
   } else if (modelObj.provider === "cohere") {
     const supportsReasoning = modelObj.supportsReasoning;
@@ -100,11 +144,22 @@ const ChatFormAction = async (
       return response;
     }
     return {
-      output: response, // Respuesta del modelo pero accedemos de una forma mas comoda
+      output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
       history: [
         ...history,
         { role: "user", content: formData.get("prompt") as string },
-        { role: "model", content: response }, // guardamos la respuesta en el historial
+        { role: "model", content: response.output }, // guardamos la respuesta en el historial
+      ],
+      historyData: [
+        ...historyData,
+        {
+          prompt,
+          files,
+          model,
+          filesNames,
+          messageId,
+          supportsReasoning,
+        },
       ],
     };
   }

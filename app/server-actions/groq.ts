@@ -7,6 +7,7 @@ import type {
 import type { GroqMessage, GroqResponse } from "../types";
 import { GenericHistory } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
+import handleFiles from "../utils/handleFiles";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -21,9 +22,12 @@ export async function groqAI(
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
   const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
+  const files = formData.getAll("files") as File[];
+  const weHaveFiles = files.length > 0;
+
   const response: Groq.Chat.Completions.ChatCompletion | ModelErrorObj =
     await getGroqContent(
-      prompt,
+      weHaveFiles ? await handleFiles(files, prompt) : prompt,
       history,
       instruccions,
       model,
@@ -32,7 +36,6 @@ export async function groqAI(
   if ("error" in response) {
     return response;
   }
-  console.log(response.choices[0].message.reasoning);
   // Devolvemos la respuesta en el formato correcto
   return {
     completationUsage: response.usage,
@@ -49,22 +52,23 @@ export async function getGroqContent(
   supportsReasoning: boolean,
 ): Promise<GroqResponse | ModelErrorObj> {
   try {
-    const response = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: instruccions,
-        },
-        ...historyFormat(history), //Le damos el historial de la conversacion formateado
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-      temperature: 0.2,
-      model,
-      include_reasoning: supportsReasoning ? true : undefined,
-    });
+    const response: Groq.Chat.Completions.ChatCompletion =
+      await groq.chat.completions.create({
+        messages: [
+          {
+            role: "system",
+            content: instruccions,
+          },
+          ...historyFormat(history), //Le damos el historial de la conversacion formateado
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        temperature: 0.2,
+        model,
+        include_reasoning: supportsReasoning ? true : undefined,
+      });
     return response;
   } catch (e: any) {
     console.log(e);

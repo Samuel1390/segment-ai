@@ -3,8 +3,12 @@ import RenderUserMessage from "./RenderUserMessages";
 import { ModelErrorObj } from "./errors/Errors";
 import Output from "./output/Output";
 import Logo from "./Logo";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ReasoningBlock from "./ReasoningBlock";
+import { LastUserMessage } from "../hooks/useChatState";
+import type { HistoryData } from "../server-actions/chatFormAction";
+import ChatGreeting from "./chat/ChatGreeting";
+
 export type GenericHistory = {
   // se encarga de hacer compatibles los historiales
   role: "user" | "model";
@@ -22,9 +26,10 @@ export type GenericResponse = // hace compatibles las respuestas
 type ModelsMessagesManagerProps = {
   history: GenericHistory[];
   isPending: boolean;
-  lastUserMessage: string;
+  lastUserMessage: LastUserMessage;
   hasError?: boolean;
   onRetry?: () => void;
+  historyData: HistoryData[];
 };
 
 function ModelsMessagesManager({
@@ -33,6 +38,7 @@ function ModelsMessagesManager({
   lastUserMessage,
   hasError,
   onRetry,
+  historyData,
 }: ModelsMessagesManagerProps) {
   const userMessageRef = useRef<HTMLDivElement>(null);
 
@@ -63,24 +69,25 @@ function ModelsMessagesManager({
                   : undefined
               }
               key={`user-message-${index}`}
-              userMessage={message.content}
+              userMessage={{
+                ...historyData[index * 2],
+                prompt: message.content,
+              }}
             />
           );
         } else if (message.role === "model") {
           return (
-            <>
+            <React.Fragment key={`model-message-${index}`}>
               {/* Mensaje de razonamiento, funciona pero por ahora no lo mostraremos */}
-              {message?.reasoning &&
+              {message?.reasoning && (
                 /*<ReasoningBlock
                   key={`${index}-reasoning`}
                   reasoning={message.reasoning}
                 />*/
-                null}
-              <Output
-                key={`model-message-${index}`}
-                content={message.content}
-              />
-            </>
+                <div hidden></div>
+              )}
+              <Output content={message.content} />
+            </React.Fragment>
           );
         }
       })}

@@ -38,7 +38,10 @@ const MarkdownRenderer = ({ content }: Props) => {
             // Si tiene lenguaje definido, es un bloque de código
             return match ? (
               <div className="my-4 overflow-hidden rounded-lg ">
-                <CopyButton content={String(children).replace(/\n$/, "")} />
+                <CopyButton
+                  language={match[1]}
+                  content={String(children).replace(/\n$/, "")}
+                />
                 <SyntaxHighlighter
                   {...rest}
                   style={theme === "dark" ? atomDark : oneLight}
