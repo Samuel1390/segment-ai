@@ -1,6 +1,6 @@
 # Segment: Inteligencia Artificial para la Comunidad FACYT
 
-¡Hola! 👋 Bienvenido al repositorio oficial de Segment. Si estás aquí, es muy probable que seas estudiante de la FACYT (Universidad de Carabobo) o alguien apasionado por la tecnología que busca colaborar en un proyecto con propósito.
+¡Hola! 👋 Bienvenido al repositorio oficial de Segment. Si estás aquí, es muy probable que seas estudiante de FACYT (Universidad de Carabobo) o alguien apasionado por la tecnología que busca colaborar en un proyecto con propósito.
 
 Mi nombre es Samuel Nelo, soy estudiante de Computación y desarrollador de este proyecto. Segment nace con una misión clara: democratizar el acceso a modelos de lenguaje avanzados (LLMs) mediante una interfaz moderna, intuitiva y optimizada para el ámbito académico.
 
@@ -8,7 +8,7 @@ Mi nombre es Samuel Nelo, soy estudiante de Computación y desarrollador de este
 
 Segment no es solo un chat, es una herramienta diseñada para el rigor científico:
 
-Renderizado Científico Avanzado: Soporte completo para ecuaciones matemáticas complejas y fórmulas químicas mediante LaTeX (\ceH2O, ∫f(x)dx).
+Renderizado Científico Avanzado: Soporte para ecuaciones matemáticas complejas y fórmulas químicas mediante LaTeX (\ceH2O, ∫f(x)dx) aún se está perfeccionando.
 
 Transcripción Inteligente: Integración con Groq (Whisper) para convertir voz a texto en tiempo real con una velocidad asombrosa.
 
@@ -45,6 +45,7 @@ npm install
 ```.env
 GEMINI_API_KEY=tu_api_key_de_gemini
 GROQ_API_KEY=tu_api_key_de_groq
+CO_API_KEY=tu_api_key_de_cohere
 ```
 
 Nota: Puedes obtener tus llaves en [AI Studio](https://aistudio.google.com/app/apikey), [Groq Console](https://console.groq.com/keys) y [Cohere Console](https://dashboard.cohere.com/api-keys).
@@ -59,7 +60,7 @@ Visita [localhost:3000](http://localhost:3000) y comienza a interactuar con Segm
 
 ## 🤝 Colaboración y Comunidad
 
-Este proyecto es de código abierto y "hecho en casa". Como desarrollador enfocado en el Frontend, estoy buscando mentes brillantes (graduados o estudiantes) que deseen fortalecer el Backend y la infraestructura de IA.
+Este proyecto es de código abierto y "hecho en casa". Como desarrollador enfocado en el Frontend, estoy buscando mentes brillantes 🧠 (graduados o estudiantes) que deseen fortalecer el Backend y la infraestructura de IA 🤖.
 
 ¿Quieres sumarte al equipo?
 
