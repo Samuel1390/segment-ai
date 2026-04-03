@@ -9,6 +9,7 @@ import ChatFormAction, {
   GenericHistory,
   HistoryData,
 } from "../server-actions/chatFormAction";
+import getModelObj from "../utils/getModelObj";
 
 export type LastUserMessage = {
   prompt: string;

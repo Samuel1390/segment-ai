@@ -9,11 +9,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import groqAI from "./groq";
 import type { ModelErrorObj } from "../components/errors/Errors";
-import { MODELS } from "../constants";
 import gemini from "./gemini";
 import type { ModelHashes } from "../constants";
 import cohereAi from "./cohere";
 import { nanoid } from "nanoid";
+import getModelObj from "../utils/getModelObj";
 
 export type GenericHistory = {
   // se encarga de hacer compatibles los historiales
@@ -76,7 +76,7 @@ const ChatFormAction = async (
       supportsReasoning,
     );
     if ("error" in response) {
-      return response; // { error: "500" | "401" | "404" | "429" | "408" | "503" | "504" } cada uno con su mensaje de error delarado en Errors.tsx
+      return response; // { error: "500" | "401" | "404" | "429" | ... } cada uno con su mensaje de error delarado en Errors.tsx
     }
 
     return {
@@ -165,15 +165,5 @@ const ChatFormAction = async (
   }
   throw new Error("Modelo no soportado"); // Revisa los modelos en el frontend para debuggear
 };
-
-function getModelObj(modelHash: ModelHashes) {
-  // Recupera el provaider para asegurarnos de que el modelo esta correcto en el frontend
-  const modelObj = MODELS.find((mdl) => mdl.modelHash === modelHash);
-  if (!modelObj) {
-    // Si ves este error revisa el frontend, no deberia pasar (eso espero)
-    throw new Error("Modelo no soportado");
-  }
-  return modelObj;
-}
 
 export default ChatFormAction;

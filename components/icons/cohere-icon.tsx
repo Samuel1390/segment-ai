@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const CohereIcon = ({
   className = "size-4 stroke-none fill-neutral-700 invert-70 dark:invert-20",
@@ -6,16 +7,18 @@ const CohereIcon = ({
 }: React.ImgHTMLAttributes<HTMLImageElement>) => {
   return (
     <div>
-      <img
-        alt="Cohere Mono Logo (DarkMod)"
+      <Image
+        alt="Logo de Cohere"
         title="Cohere Mono Logo (DarkMod)"
         loading="lazy"
-        width={32}
-        height={32}
         decoding="async"
         data-nimg="1"
         className={className}
-        src="https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/cohere.png"
+        width={32 as any}
+        height={32 as any}
+        src={
+          "https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/cohere.png" as any
+        }
         {...props}
       />
     </div>

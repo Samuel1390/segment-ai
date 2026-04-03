@@ -55,10 +55,10 @@ export async function cohereAi(
   } catch (e: any) {
     console.log(e);
     if (e?.status) {
-      return { error: (e?.status as ModelErrorType) || "500" };
+      return { error: (e?.status as ModelErrorType) || 500 };
     }
   }
-  return { error: "500" };
+  return { error: 500 };
 }
 
 export async function getCohereContent(
@@ -88,10 +88,10 @@ export async function getCohereContent(
   } catch (e: any) {
     console.log(e);
     if (e?.status) {
-      return { error: (e?.status as ModelErrorType) || "500" };
+      return { error: (e?.status as ModelErrorType) || 500 };
     }
   }
-  return { error: "500" };
+  return { error: 500 };
 }
 
 function historyFormat(history: GenericHistory[]): CohereMessage[] {

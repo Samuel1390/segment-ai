@@ -36,11 +36,15 @@ const Chat = () => {
     setModel,
     clearPrompt,
     handleFilesChange,
+    setForm,
+    formLoading,
+    modelObj,
+    setModelObj,
   } = useChatInput(setFeedbackMessage);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      if (sendIsAllowed && !isPending) {
+      if (sendIsAllowed && !isPending && !formLoading) {
         e.preventDefault();
         e.currentTarget.form?.requestSubmit();
         clearPrompt();
@@ -66,6 +70,7 @@ const Chat = () => {
         "overflow-y-hidden",
       )}
     >
+      {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}
       {state && "error" in state && (
         <Errors
           code={state.error}
@@ -74,6 +79,7 @@ const Chat = () => {
         />
       )}
 
+      {/* Si hay un mensaje del usuario, se muestra el manager de modelos */}
       {lastUserMessage.prompt ? (
         <ModelsMessagesManager
           history={history}
@@ -84,9 +90,11 @@ const Chat = () => {
           historyData={historyData}
         />
       ) : (
+        /* Si no hay un mensaje del usuario, se muestra el saludo inicial dandole la bienvenida a nuestro usuario*/
         <ChatGreeting />
       )}
 
+      {/* FORMULARIO DE ENTRADA */}
       <ChatInputForm
         historyData={historyData}
         formRef={formRef}
@@ -105,6 +113,10 @@ const Chat = () => {
         recorder={recorder}
         feedbackMessage={feedbackMessage}
         setFeedbackMessage={setFeedbackMessage}
+        setForm={setForm}
+        formLoading={formLoading}
+        modelObj={modelObj}
+        setModelObj={setModelObj}
       />
     </section>
   );

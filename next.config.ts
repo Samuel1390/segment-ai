@@ -6,13 +6,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "pollinations.ai",
+        hostname: "raw.githubusercontent.com",
         port: "",
-        pathname: "/p/**",
+        pathname: "/**",
       },
     ],
   },
-
 };
 
 export default nextConfig;

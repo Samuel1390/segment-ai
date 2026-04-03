@@ -7,7 +7,6 @@ import React, { useEffect, useRef } from "react";
 import ReasoningBlock from "./ReasoningBlock";
 import { LastUserMessage } from "../hooks/useChatState";
 import type { HistoryData } from "../server-actions/chatFormAction";
-import ChatGreeting from "./chat/ChatGreeting";
 
 export type GenericHistory = {
   // se encarga de hacer compatibles los historiales
@@ -79,13 +78,12 @@ function ModelsMessagesManager({
           return (
             <React.Fragment key={`model-message-${index}`}>
               {/* Mensaje de razonamiento, funciona pero por ahora no lo mostraremos */}
-              {message?.reasoning && (
+              {message?.reasoning &&
                 /*<ReasoningBlock
                   key={`${index}-reasoning`}
                   reasoning={message.reasoning}
                 />*/
-                <div hidden></div>
-              )}
+                null}
               <Output content={message.content} />
             </React.Fragment>
           );

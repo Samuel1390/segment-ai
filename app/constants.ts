@@ -14,13 +14,14 @@ export type ModelHashes =
   | "gemini-2.5-flash"
   | "command-a-03-2025";
 
-type Models = Array<{
+export type Models = Array<{
   label: string;
   description: string;
   modelHash: ModelHashes;
   provider: string;
   supportsReasoning: boolean;
   icon?: React.JSX.Element;
+  supportsFiles: boolean;
 }>;
 
 export const MODELS: Models = [
@@ -34,6 +35,7 @@ export const MODELS: Models = [
     icon: React.createElement(OpenaiIcon, {
       className: "size-4 stroke-none outline-none fill-black dark:fill-white",
     }),
+    supportsFiles: true,
   },
   {
     label: "OpenAI GPT OSS 120B",
@@ -45,6 +47,7 @@ export const MODELS: Models = [
     icon: React.createElement(OpenaiIcon, {
       className: "size-4 stroke-none outline-none fill-black dark:fill-white",
     }),
+    supportsFiles: true,
   },
   {
     label: "Llama 3.1 8B",
@@ -56,6 +59,7 @@ export const MODELS: Models = [
       className:
         "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",
     }),
+    supportsFiles: false,
   },
   {
     label: "Llama 3.3 70B",
@@ -67,6 +71,7 @@ export const MODELS: Models = [
       className:
         "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",
     }),
+    supportsFiles: true,
   },
   {
     label: "Compound",
@@ -76,6 +81,7 @@ export const MODELS: Models = [
     provider: "groq",
     supportsReasoning: false,
     icon: React.createElement(GroqIcon, {}),
+    supportsFiles: true,
   },
   {
     label: "Gemini 2.5 Flash",
@@ -86,6 +92,7 @@ export const MODELS: Models = [
     icon: React.createElement(GooglegeminiIcon, {
       className: "size-4 stroke-none fill-neutral-700 dark:fill-neutral-300",
     }),
+    supportsFiles: false,
   },
   {
     label: "Command A03 2025",
@@ -94,5 +101,9 @@ export const MODELS: Models = [
     provider: "cohere",
     supportsReasoning: false,
     icon: React.createElement(CohereIcon, {}),
+    supportsFiles: false,
   },
 ];
+
+export const isNotTextFile =
+  /\.(png|jpg|jpeg|gif|bmp|webp|ico|svg|mp4|avi|mov|mkv|flv|wmv|mp3|wav|ogg|flac|aac|zip|rar|7z|tar|gz|bz2|exe|dll|so|dylib|bin|class|pyc|o|obj|lib|a|out|iso|img|dmg|msi|deb|rpm|apk|ipa|pdf|doc|docx|xls|xlsx|ppt|pptx|mdb|accdb|psd|ai|eps|indd|cdr|blend|fbx|obj|3ds|stl|ttf|otf|woff|woff2|eot|wasm)$/i;
