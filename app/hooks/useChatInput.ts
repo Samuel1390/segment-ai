@@ -80,7 +80,7 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
   }, [form.files]);
 
   const handleFilesChange = async (files: File[]) => {
-    if (!modelObj.supportsFiles) {
+    if (!modelObj.supportsFiles && files.length > 0) {
       setFeedbackMessage(
         "El modelo actual no soporta archivos, cambia de modelo para poder usar esta funcionalidad",
       );

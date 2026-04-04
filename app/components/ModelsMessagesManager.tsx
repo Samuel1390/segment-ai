@@ -84,7 +84,10 @@ function ModelsMessagesManager({
                   reasoning={message.reasoning}
                 />*/
                 null}
-              <Output content={message.content} />
+              <Output
+                historyData={historyData[index * 2 + 1]}
+                content={message.content}
+              />
             </React.Fragment>
           );
         }

@@ -5,9 +5,10 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
-import CopyButton from "./CopyButton";
+import CopyButton, { SimpleCopyButton } from "./CopyButton";
 import "./output.css";
-
+import { useEffect } from "react";
+import type { HistoryData } from "@/app/server-actions/chatFormAction";
 import {
   oneLight,
   oneDark,
@@ -15,13 +16,30 @@ import {
 } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import useTheme from "@/app/hooks/useTheme";
 
+// EL markdow generado por gpt aun es muy dificil de interpretar con librerias comunes
+// por lo que aun es necesario trabajar en el renderizado de markdown
+// para asegurarse de que cubrimos todos los casos esto para formulas matematicas fisicas y quimicas
+
+/* Prompt para probar el renderizado de markdown:
+Genera todo tipo de formulas matematicas fisicas y quimicas en markdown, incluyendo formulas de integrales, derivadas, ecuaciones diferenciales, matrices de algebra lineal, series complejas, formulas de fisica como la ley de gravitación universal, formulas de quimica como la ecuacion de estado de los gases ideales, etc. Asegurate de incluir una gran variedad de formulas para probar el renderizado de markdown, esto con la finalidad de asegurar que el renderizado sea correcto y estético en el frontend.
+ */
+
 type Props = {
   content: string;
+  historyData: HistoryData;
 };
 
-const MarkdownRenderer = ({ content }: Props) => {
+const MarkdownRenderer = ({ content, historyData }: Props) => {
   const { theme } = useTheme();
-  const processedContent = preprocessContent(content);
+
+  useEffect(() => {
+    const marginSpan = document.createElement("span");
+    marginSpan.style.marginBottom = "1rem";
+    document.querySelectorAll(".katex").forEach((block) => {
+      block.insertAdjacentElement("afterend", marginSpan);
+    });
+  }, [content]);
+
   return (
     <div
       className={`model-output max-md:px-4 ${theme === "dark" ? "dark" : ""}`}
@@ -78,29 +96,14 @@ const MarkdownRenderer = ({ content }: Props) => {
           ),
         }}
       >
-        {processedContent}
+        {content}
       </ReactMarkdown>
+      <SimpleCopyButton
+        hoverContent="Copiar markdown"
+        copiedContent="Markdown copiado!"
+        content={content}
+      />
     </div>
-  );
-};
-// este codigo fue generado por gemini, aun es necesario revisar que este correcto
-const preprocessContent = (content: string) => {
-  if (!content) return "";
-
-  return (
-    content
-      // 1. Eliminar líneas que solo contienen "$" (los dólares huérfanos de GPT)
-      .split("\n")
-      .filter((line) => line.trim() !== "$")
-      .join("\n")
-      // 2. Normalizar delimitadores que los modelos ignoran
-      .replace(/\\\[/g, "\n$$\n")
-      .replace(/\\\]/g, "\n$$\n")
-      .replace(/\\\(/g, "$")
-      .replace(/\\\)/g, "$")
-      // 3. Limpiar espacios extra dentro de bloques matemáticos
-      .replace(/\$\$\s+/g, "$$")
-      .replace(/\s+\$\$/g, "$$")
   );
 };
 
