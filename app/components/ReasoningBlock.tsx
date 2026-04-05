@@ -4,8 +4,15 @@ import Output from "./output/Output";
 import { Button } from "@/components/ui/button";
 import { Atom } from "lucide-react";
 import { ChevronDown } from "lucide-react";
+import type { HistoryData } from "../server-actions/chatFormAction";
 
-const ReasoningBlock = ({ reasoning }: { reasoning: string }) => {
+const ReasoningBlock = ({
+  reasoning,
+  historyData,
+}: {
+  reasoning: string;
+  historyData: HistoryData;
+}) => {
   const [colapseContent, setColapseContent] = useState(false);
   return (
     <div className="flex bg-neutral-200 dark:bg-neutral-800 py-4 rounded flex-col gap-2">
@@ -23,7 +30,7 @@ const ReasoningBlock = ({ reasoning }: { reasoning: string }) => {
           colapseContent ? "hidden" : "block"
         } text-muted-foreground px-3 opacity-75 text-sm`}
       >
-        <Output content={reasoning} />
+        <Output content={reasoning} historyData={historyData} />
       </div>
     </div>
   );

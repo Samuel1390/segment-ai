@@ -111,28 +111,82 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
 };
 
 // Importante: Esta funcion es generada con ia, es necesario probarla con una gran variedad de formulas para asegurarse de que el renderizado sea correcto y estético en el frontend, ademas de ir ajustandola segun se vayan encontrando casos que no rendericen correctamente, esto con la finalidad de asegurar que el renderizado de markdown sea lo mas robusto posible.
-const preprocessContent = (content: string) => {
+const preprocessContent = (content: string): string => {
   if (!content) return "";
 
-  return (
-    content
-      // 1. Normalizar bloques de visualización: \[ ... \] -> $$ ... $$
-      // Usamos saltos de línea para asegurar que remark-math lo detecte como bloque
-      .replace(/\\\[/g, "\n$$\n")
-      .replace(/\\\]/g, "\n$$\n")
+  let processed = content;
 
-      // 2. Normalizar fórmulas en línea: \( ... \) -> $ ... $
-      .replace(/\\\(/g, "$")
-      .replace(/\\\)/g, "$")
-
-      // 3. Limpiar espacios innecesarios que rompen KaTeX
-      // Algunos modelos envían "$ x + y $", pero remark-math prefiere "$x + y$"
-      .replace(/\$\s+/g, "$")
-      .replace(/\s+\$/g, "$")
-
-      // 4. Protección contra triples dólares accidentales ($$$)
-      .replace(/\${3,}/g, "$$")
+  // 1. Convertir entornos LaTeX a display math $$...$$
+  //    \begin{equation} ... \end{equation}
+  processed = processed.replace(
+    /\\begin\{equation\}([\s\S]*?)\\end\{equation\}/g,
+    (_, eq) => `\n$$\n${eq.trim()}\n$$\n`,
   );
+  //    \begin{align} ... \end{align}  (y similares: align*, gather, etc.)
+  processed = processed.replace(
+    /\\begin\{align\*?\}([\s\S]*?)\\end\{align\*?\}/g,
+    (_, eq) => `\n$$\n\\begin{aligned}${eq.trim()}\\end{aligned}\n$$\n`,
+  );
+
+  // 2. Convertir \[ ... \] y $$ ... $$ ya están manejados, pero reforzamos
+  processed = processed.replace(/\\\[/g, "\n$$\n").replace(/\\\]/g, "\n$$\n");
+
+  // 3. Convertir \( ... \) a $ ... $
+  processed = processed.replace(/\\\(/g, "$").replace(/\\\)/g, "$");
+
+  // 4. Limpiar espacios alrededor de $ (evita $ x $)
+  processed = processed.replace(/\$\s+/g, "$").replace(/\s+\$/g, "$");
+
+  // 5. (NUEVO) Detectar patrones de matemáticas en línea sin delimitadores
+  //    Buscamos secuencias que comiencen con un comando LaTeX típico y sigan hasta
+  //    un espacio o signo de puntuación, y que no estén ya dentro de $...$ o $$...$$
+  //    Para evitar falsos positivos, solo aplicamos si el patrón aparece fuera de
+  //    cualquier entorno matemático existente.
+  //    Usamos una regex que ignora contenido ya envuelto.
+  const inlineMathPattern = /(?<!\$)(\\[a-zA-Z]+|\\[^\s]+)(?![^$]*\$)/g;
+  //    Esto es demasiado simple; mejor: buscar fragmentos que parezcan matemáticas completas.
+  //    Un enfoque más seguro: buscar todo lo que no está dentro de $ y que contiene \sum, \int, \frac, etc.
+  //    Lo hacemos en varios pasos:
+
+  //    a) Primero protegemos los bloques $$...$$ y $...$ existentes (temporalmente)
+  const mathBlocks: string[] = [];
+  processed = processed.replace(/(\$\$[\s\S]*?\$\$|\$[^$]*?\$)/g, (match) => {
+    mathBlocks.push(match);
+    return `@@MATHBLOCK${mathBlocks.length - 1}@@`;
+  });
+
+  //    b) Ahora, fuera de esos bloques, buscamos candidatos a matemáticas.
+  //       Patrón: comienza con \, luego letras, posiblemente seguido de { }, [ ], etc.
+  //       Capturamos hasta un espacio, signo de puntuación o fin de línea.
+  const rawOutside = processed;
+  const fixedOutside = rawOutside.replace(
+    /(\\[a-zA-Z]+(?:\{[^}]*\}|\[[^\]]*\]|\{[^{}]*\}|\([^)]*\)|\s*[\\^_{}]?)*)/g,
+    (candidate) => {
+      // Si el candidato es muy corto (ej: \n) o claramente texto, lo ignoramos
+      if (candidate.length < 2) return candidate;
+      // Verificar si ya parece estar en un contexto matemático (ej: dentro de \text)
+      // Por simplicidad, lo envolvemos con $...$
+      return `$${candidate}$`;
+    },
+  );
+
+  //    c) Restaurar los bloques originales
+  processed = fixedOutside.replace(
+    /@@MATHBLOCK(\d+)@@/g,
+    (_, idx) => mathBlocks[parseInt(idx)],
+  );
+
+  // 6. Eliminar múltiples $ consecutivos (por si acaso)
+  processed = processed.replace(/\${3,}/g, "$$");
+
+  // 7. Normalizar \displaystyle y otros comandos que KaTeX maneja bien, pero que a veces causan espacios extra
+  processed = processed.replace(/\\displaystyle\s*/g, ""); // No es necesario en $$, y en línea puede ir sin él
+
+  // 8. Asegurar que fórmulas largas (con \bigl, \bigr, etc.) tengan saltos de línea amigables
+  //    Esto se hace con CSS, pero podemos insertar \n después de $$ para mejor legibilidad
+  processed = processed.replace(/\$\$\n?/g, "\n$$\n");
+
+  return processed;
 };
 
 export default MarkdownRenderer;

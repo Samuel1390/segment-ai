@@ -83,8 +83,9 @@ function ModelsMessagesManager({
               {/* Mensaje de razonamiento, funciona pero por ahora no lo mostraremos */}
               {message?.reasoning &&
                 /*<ReasoningBlock
-                  key={`${index}-reasoning`}
-                  reasoning={message.reasoning}
+                key={`${index}-reasoning`}
+                reasoning={message.reasoning}
+                historyData={historyData[(index - 1) / 2]}
                 />*/
                 null}
               <Output
