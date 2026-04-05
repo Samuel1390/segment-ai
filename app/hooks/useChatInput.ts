@@ -20,7 +20,6 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
     files: [],
     filesNames: [],
   });
-  const [sendIsAllowed, setSendIsAlowed] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const recorder = useRecorder();
   const [modelObj, setModelObj] = useState<Models[number]>(
@@ -51,7 +50,6 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
             const transcription = await res.json();
             if (transcription.text) {
               setForm((prev) => ({ ...prev, prompt: transcription.text }));
-              setSendIsAlowed(true);
             }
           })
           .catch(() => {
@@ -68,7 +66,6 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setForm((prev) => ({ ...prev, prompt: value }));
-    setSendIsAlowed(value.trim().length > 0);
   };
 
   useEffect(() => {
@@ -143,13 +140,11 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
 
   const clearPrompt = () => {
     setForm((prev) => ({ ...prev, prompt: "", files: [], filesNames: [] }));
-    setSendIsAlowed(false);
   };
 
   return {
     form,
     recorder,
-    sendIsAllowed,
     handleChange,
     handleToolChange,
     setModel,

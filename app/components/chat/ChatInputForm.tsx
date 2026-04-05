@@ -37,7 +37,6 @@ type ChatInputFormProps = {
   model: ModelHashes;
   setModel: (model: ModelHashes) => void;
   isPending: boolean;
-  sendIsAllowed: boolean;
   recorder: any;
   feedbackMessage?: string;
   setFeedbackMessage: (message: string) => void;
@@ -48,6 +47,7 @@ type ChatInputFormProps = {
   formLoading: boolean;
   modelObj: Models[number];
   setModelObj: (modelObj: Models[number]) => void;
+  isFormAvailable: (extracontitions: boolean[]) => boolean;
 };
 
 export default function ChatInputForm({
@@ -62,7 +62,6 @@ export default function ChatInputForm({
   setModel,
   isPending,
   setFeedbackMessage,
-  sendIsAllowed,
   recorder,
   handleFilesChange,
   feedbackMessage,
@@ -72,6 +71,7 @@ export default function ChatInputForm({
   formLoading,
   modelObj,
   setModelObj,
+  isFormAvailable,
 }: ChatInputFormProps) {
   usePreventSelectScroll();
 
@@ -246,7 +246,7 @@ export default function ChatInputForm({
               "rounded-full disabled:cursor-not-allowed",
               "flex items-center justify-center",
             )}
-            disabled={isPending || !prompt.trim() || formLoading}
+            disabled={!isFormAvailable([])}
             type="submit"
           >
             {formLoading ? (

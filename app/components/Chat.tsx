@@ -28,15 +28,9 @@ const Chat = () => {
     historyData,
   } = useChatState();
 
-  console.log(
-    "datos del historyData en el componente MarkdownRenderer: ",
-    historyData,
-  );
-
   const {
     form,
     recorder,
-    sendIsAllowed,
     handleChange,
     setModel,
     clearPrompt,
@@ -47,9 +41,28 @@ const Chat = () => {
     setModelObj,
   } = useChatInput(setFeedbackMessage);
 
+  function isFormAvailable([...extraConditions]: boolean[]): boolean {
+    // Esta funcion se encarga de validar si el formulario esta listo para ser enviado
+    const isFilesAvailable =
+      !(!modelObj.supportsFiles && form.files.length > 0) ||
+      modelObj.supportsFiles;
+
+    const weHavePrompt = form.prompt.trim().length > 0;
+
+    const readyToSend = !(isPending || formLoading);
+
+    const isFormValid =
+      isFilesAvailable &&
+      weHavePrompt &&
+      extraConditions.every((v) => !!v) &&
+      readyToSend;
+
+    return isFormValid;
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      if (sendIsAllowed && !isPending && !formLoading) {
+      if (isFormAvailable([])) {
         e.preventDefault();
         e.currentTarget.form?.requestSubmit();
         clearPrompt();
@@ -114,7 +127,6 @@ const Chat = () => {
         handleFilesChange={handleFilesChange}
         setModel={setModel}
         isPending={isPending}
-        sendIsAllowed={sendIsAllowed}
         recorder={recorder}
         feedbackMessage={feedbackMessage}
         setFeedbackMessage={setFeedbackMessage}
@@ -122,6 +134,7 @@ const Chat = () => {
         formLoading={formLoading}
         modelObj={modelObj}
         setModelObj={setModelObj}
+        isFormAvailable={isFormAvailable}
       />
     </section>
   );
