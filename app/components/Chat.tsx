@@ -28,6 +28,11 @@ const Chat = () => {
     historyData,
   } = useChatState();
 
+  console.log(
+    "datos del historyData en el componente MarkdownRenderer: ",
+    historyData,
+  );
+
   const {
     form,
     recorder,
@@ -66,8 +71,8 @@ const Chat = () => {
   return (
     <section
       className={cn(
-        "h-full flex w-full justify-center items-center flex-col",
-        "overflow-y-hidden",
+        `flex w-full justify-center h-full items-center flex-col`,
+        `overflow-y-hidden`,
       )}
     >
       {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}

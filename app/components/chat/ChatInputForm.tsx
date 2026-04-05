@@ -111,7 +111,7 @@ export default function ChatInputForm({
         value={prompt}
         onChange={handleChange}
         name={"prompt"}
-        className="w-full text-sm sm:text-md md:text-[1rem] min-h-20 max-h-30 overflow-y-auto"
+        className="w-full text-md md:text-[1rem] min-h-20 max-h-30 overflow-y-auto"
         onKeyDown={handleKeyDown}
         placeholder="Pregunta a Segment"
       />

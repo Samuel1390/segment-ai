@@ -6,6 +6,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 import CopyButton, { SimpleCopyButton } from "./CopyButton";
+import getModelObj from "@/app/utils/getModelObj";
 import "./output.css";
 import { useEffect } from "react";
 import type { HistoryData } from "@/app/server-actions/chatFormAction";
@@ -31,14 +32,14 @@ type Props = {
 
 const MarkdownRenderer = ({ content, historyData }: Props) => {
   const { theme } = useTheme();
-
-  useEffect(() => {
-    const marginSpan = document.createElement("span");
-    marginSpan.style.marginBottom = "1rem";
-    document.querySelectorAll(".katex").forEach((block) => {
-      block.insertAdjacentElement("afterend", marginSpan);
-    });
-  }, [content]);
+  console.log(
+    "datos del historyData en el componente MarkdownRenderer: ",
+    historyData,
+  );
+  const { model: modelHash } = historyData;
+  const modelObj = getModelObj(modelHash);
+  // Aplicamos la limpieza antes de pasarla al componente
+  const preprocessedContent = preprocessContent(content);
 
   return (
     <div
@@ -48,12 +49,10 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          // Cambiamos la lógica del componente 'code'
           code(props) {
             const { children, className, node, ref, ...rest } = props;
             const match = /language-(\w+)/.exec(className || "");
 
-            // Si tiene lenguaje definido, es un bloque de código
             return match ? (
               <div className="my-4 overflow-hidden rounded-lg ">
                 <CopyButton
@@ -76,7 +75,6 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
                 </SyntaxHighlighter>
               </div>
             ) : (
-              // Código en línea (inline code)
               <code
                 className="rounded bg-gray-200 dark:bg-gray-800 px-1.5 py-0.5 text-pink-500 font-mono text-sm"
                 {...rest}
@@ -85,7 +83,6 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
               </code>
             );
           },
-          // Enlaces mejorados
           a: ({ ...props }) => (
             <a
               {...props}
@@ -96,14 +93,45 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
           ),
         }}
       >
-        {content}
+        {preprocessedContent}
       </ReactMarkdown>
-      <SimpleCopyButton
-        hoverContent="Copiar markdown"
-        copiedContent="Markdown copiado!"
-        content={content}
-      />
+      {/* Footer de la respuesta del modelo | contiene informacion adicional */}
+      <div className="mt-4 flex justify-between items-center gap-2 border-t-2 pt-3 dark:border-neutral-700 border-neutral-300">
+        <div className="text-md text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
+          Modelo: {modelObj?.icon && modelObj.icon} {modelObj.label}
+        </div>
+        <SimpleCopyButton
+          hoverContent="Copiar markdown"
+          copiedContent="Markdown copiado!"
+          content={content}
+        />
+      </div>
     </div>
+  );
+};
+
+// Importante: Esta funcion es generada con ia, es necesario probarla con una gran variedad de formulas para asegurarse de que el renderizado sea correcto y estético en el frontend, ademas de ir ajustandola segun se vayan encontrando casos que no rendericen correctamente, esto con la finalidad de asegurar que el renderizado de markdown sea lo mas robusto posible.
+const preprocessContent = (content: string) => {
+  if (!content) return "";
+
+  return (
+    content
+      // 1. Normalizar bloques de visualización: \[ ... \] -> $$ ... $$
+      // Usamos saltos de línea para asegurar que remark-math lo detecte como bloque
+      .replace(/\\\[/g, "\n$$\n")
+      .replace(/\\\]/g, "\n$$\n")
+
+      // 2. Normalizar fórmulas en línea: \( ... \) -> $ ... $
+      .replace(/\\\(/g, "$")
+      .replace(/\\\)/g, "$")
+
+      // 3. Limpiar espacios innecesarios que rompen KaTeX
+      // Algunos modelos envían "$ x + y $", pero remark-math prefiere "$x + y$"
+      .replace(/\$\s+/g, "$")
+      .replace(/\s+\$/g, "$")
+
+      // 4. Protección contra triples dólares accidentales ($$$)
+      .replace(/\${3,}/g, "$$")
   );
 };
 

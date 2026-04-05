@@ -69,12 +69,15 @@ function ModelsMessagesManager({
               }
               key={`user-message-${index}`}
               userMessage={{
-                ...historyData[index * 2],
                 prompt: message.content,
               }}
             />
           );
         } else if (message.role === "model") {
+          console.log("Indice", index);
+          // aqui index es un numero impar que empieza en 1
+          // por lo tanto debemos restar 1 y dividir entre 2 para obtener el indice correcto del historyData
+          console.log("indice del historial: ", (index - 1) / 2);
           return (
             <React.Fragment key={`model-message-${index}`}>
               {/* Mensaje de razonamiento, funciona pero por ahora no lo mostraremos */}
@@ -85,7 +88,7 @@ function ModelsMessagesManager({
                 />*/
                 null}
               <Output
-                historyData={historyData[index * 2 + 1]}
+                historyData={historyData[(index - 1) / 2]}
                 content={message.content}
               />
             </React.Fragment>

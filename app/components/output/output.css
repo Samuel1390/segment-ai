@@ -112,20 +112,20 @@ strong {
 
 .model-output .katex {
   padding-inline: 10px !important;
-  font-size: 1.4em !important;
+  font-size: 1.2em !important;
   margin-block: 1rem !important;
   display: inline-block !important;
 }
 
 /* Las fórmulas en bloque (centradas) se ven aún más grandes para resaltar */
 .model-output .katex-display {
-  font-size: 1.4em !important;
+  font-size: 1.2em !important;
   margin-block: 1rem !important;
   display: block !important;
   margin-inline: auto !important;
   padding-inline: 10px;
   padding-block: 20px;
-  overflow-x: auto;
+  overflow-x: auto !important; /* Permitir scroll horizontal si la fórmula es muy ancha */
 }
 .model-output .katex-display > .katex {
   /* Asegurar que el contenido interno respete el scroll */
