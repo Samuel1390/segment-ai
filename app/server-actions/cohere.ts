@@ -6,7 +6,7 @@ import type {
 } from "../components/errors/Errors";
 import type { GroqMessage, GroqResponse } from "../types";
 import handleFiles from "../utils/handleFiles";
-import { GenericHistory } from "./chatFormAction";
+import { GenericMessage } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
 import { CohereClientV2 } from "cohere-ai";
 import { HttpResponsePromise } from "cohere-ai/core";
@@ -24,7 +24,7 @@ export async function cohereAi(
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
-  const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
+  const history: GenericMessage[] = historyRaw ? JSON.parse(historyRaw) : [];
   const files: File[] = formData.getAll("files") as File[];
 
   const weHaveFiles = files.length > 0;
@@ -63,7 +63,7 @@ export async function cohereAi(
 
 export async function getCohereContent(
   prompt: string,
-  history: GenericHistory[],
+  history: GenericMessage[],
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
@@ -94,7 +94,7 @@ export async function getCohereContent(
   return { error: 500 };
 }
 
-function historyFormat(history: GenericHistory[]): CohereMessage[] {
+function historyFormat(history: GenericMessage[]): CohereMessage[] {
   // Aqui transformamos el historial para que sea compatible con groq
   const historyFormated = history.map((message) => {
     return {

@@ -3,7 +3,7 @@ import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 import type { GeminiMessage, GeminiResponse } from "../types";
 import type { Models } from "../types";
 import { ModelErrorType, ModelErrorObj } from "../components/errors/Errors";
-import { GenericHistory } from "./chatFormAction";
+import { GenericMessage } from "./chatFormAction";
 import { ModelHashes } from "../constants";
 import handleFiles from "../utils/handleFiles";
 
@@ -23,7 +23,7 @@ export async function gemini(
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
-  const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
+  const history: GenericMessage[] = historyRaw ? JSON.parse(historyRaw) : [];
   const files = formData.getAll("files") as File[];
   const weHaveFiles = files.length > 0;
   const promptWithFiles = weHaveFiles ? await handleFiles(files, prompt) : null;
@@ -41,7 +41,7 @@ export async function gemini(
 
 async function generateText(
   prompt: string,
-  history: GenericHistory[],
+  history: GenericMessage[],
   model: GenerativeModel,
 ): Promise<GeminiResponse | ModelErrorObj> {
   try {
@@ -61,7 +61,7 @@ async function generateText(
   }
 }
 
-function formatHistory(history: GenericHistory[]): GeminiMessage[] {
+function formatHistory(history: GenericMessage[]): GeminiMessage[] {
   // Aqui transformamos el historial para que sea compatible con gemini
   return history.map((message) => {
     return {

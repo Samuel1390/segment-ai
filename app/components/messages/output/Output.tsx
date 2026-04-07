@@ -8,7 +8,6 @@ import "katex/dist/katex.min.css";
 import CopyButton, { SimpleCopyButton } from "./CopyButton";
 import getModelObj from "@/app/utils/getModelObj";
 import "./output.css";
-import { useEffect } from "react";
 import type { HistoryData } from "@/app/server-actions/chatFormAction";
 import {
   oneLight,
@@ -22,7 +21,7 @@ import useTheme from "@/app/hooks/useTheme";
 // para asegurarse de que cubrimos todos los casos esto para formulas matematicas fisicas y quimicas
 
 /* Prompt para probar el renderizado de markdown:
-Genera todo tipo de formulas matematicas fisicas y quimicas en markdown, incluyendo formulas de integrales, derivadas, ecuaciones diferenciales, matrices de algebra lineal, series complejas, formulas de fisica como la ley de gravitación universal, formulas de quimica como la ecuacion de estado de los gases ideales, etc. Asegurate de incluir una gran variedad de formulas para probar el renderizado de markdown, esto con la finalidad de asegurar que el renderizado sea correcto y estético en el frontend.
+Genera todo tipo de formulas matemáticas físicas y químicas en markdown, incluyendo formulas de integrales, derivadas, ecuaciones diferenciales, matrices de álgebra lineal, series complejas, formulas de física como la ley de gravitación universal, formulas de química como la ecuación de estado de los gases ideales, etc. Asegúrate de incluir una gran variedad de formulas para probar el renderizado de markdown, esto con la finalidad de asegurar que el renderizado sea correcto y estético en el frontend.
  */
 
 type Props = {
@@ -91,14 +90,19 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
               className="text-blue-500 hover:text-blue-400 underline transition-colors"
             />
           ),
+          table: ({ ...props }) => (
+            <div className="table-wrapper flex max-w-full overflow-x-auto">
+              <table {...props} />
+            </div>
+          ),
         }}
       >
         {preprocessedContent}
       </ReactMarkdown>
       {/* Footer de la respuesta del modelo | contiene informacion adicional */}
-      <div className="mt-4 flex justify-between items-center gap-2 border-t-2 pt-3 dark:border-neutral-700 border-neutral-300">
+      <div className="py-4 mt-4 flex justify-between items-center gap-2 border-t-2 pt-3 dark:border-neutral-700 border-neutral-300">
         <div className="text-md text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-          Modelo: {modelObj?.icon && modelObj.icon} {modelObj.label}
+          Modelo: {modelObj.label} {modelObj?.icon && modelObj.icon}
         </div>
         <SimpleCopyButton
           hoverContent="Copiar markdown"
@@ -110,7 +114,12 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
   );
 };
 
-// Importante: Esta funcion es generada con ia, es necesario probarla con una gran variedad de formulas para asegurarse de que el renderizado sea correcto y estético en el frontend, ademas de ir ajustandola segun se vayan encontrando casos que no rendericen correctamente, esto con la finalidad de asegurar que el renderizado de markdown sea lo mas robusto posible.
+// Importante: Esta funcion es generada con ia, es necesario probarla
+// con una gran variedad de formulas para asegurarse de que
+// el renderizado sea correcto y estético en el frontend, ademas de ir ajustandola
+// segun se vayan encontrando casos que no rendericen correctamente, esto
+// con la finalidad de asegurar que el renderizado de markdown sea lo
+// mas robusto posible.
 const preprocessContent = (content: string): string => {
   if (!content) return "";
 

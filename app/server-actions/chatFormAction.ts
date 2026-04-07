@@ -15,7 +15,7 @@ import cohereAi from "./cohere";
 import { nanoid } from "nanoid";
 import getModelObj from "../utils/getModelObj";
 
-export type GenericHistory = {
+export type GenericMessage = {
   // se encarga de hacer compatibles los historiales
   role: "user" | "model";
   content: string;
@@ -31,15 +31,11 @@ export type HistoryData = {
   messageId: string;
   model: ModelHashes;
   supportsReasoning: boolean;
+  messages: GenericMessage[];
 };
 
 export type GenericResponse = // hace compatibles las respuestas
-  | ModelErrorObj
-  | {
-      output: string;
-      history: GenericHistory[];
-      historyData: HistoryData[];
-    };
+  ModelErrorObj | HistoryData[];
 
 const ChatFormAction = async (
   state: unknown,
@@ -50,8 +46,6 @@ const ChatFormAction = async (
   const files = formData.getAll("files") as File[];
   const filesNames = files.map((file) => file.name);
   const model = formData.get("model") as ModelHashes;
-  const historyRaw = formData.get("history") as string;
-  const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
   const messageId = nanoid();
 
   const historyDataRaw = formData.get("historyData") as string;
@@ -78,30 +72,28 @@ const ChatFormAction = async (
     if ("error" in response) {
       return response; // { error: "500" | "401" | "404" | "429" | ... } cada uno con su mensaje de error delarado en Errors.tsx
     }
+    const messages: GenericMessage[] = [
+      { role: "user", content: formData.get("prompt") as string },
+      {
+        role: "model",
+        content: response.output,
+        reasoning: response?.reasoning || undefined,
+      }, // guardamos la respuesta en el historial
+    ];
 
-    return {
-      output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
-      history: [
-        ...history,
-        { role: "user", content: formData.get("prompt") as string },
-        {
-          role: "model",
-          content: response.output,
-          reasoning: response?.reasoning || undefined,
-        }, // guardamos la respuesta en el historial
-      ],
-      historyData: [
-        ...historyData,
-        {
-          prompt,
-          files,
-          filesNames,
-          messageId,
-          model,
-          supportsReasoning,
-        },
-      ],
-    };
+    const data = [
+      ...historyData,
+      {
+        prompt,
+        files,
+        filesNames,
+        messageId,
+        model,
+        supportsReasoning,
+        messages,
+      },
+    ];
+    return data;
   } else if (modelObj.provider === "gemini") {
     const supportsReasoning = modelObj.supportsReasoning;
     const response = await gemini(
@@ -113,25 +105,25 @@ const ChatFormAction = async (
     if ("error" in response) {
       return response;
     }
-    return {
-      output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
-      history: [
-        ...history,
-        { role: "user", content: formData.get("prompt") as string },
-        { role: "model", content: response.output }, // guardamos la respuesta en el historial
-      ],
-      historyData: [
-        ...historyData,
-        {
-          prompt,
-          files,
-          filesNames,
-          model,
-          messageId,
-          supportsReasoning,
-        },
-      ],
-    };
+    const messages: GenericMessage[] = [
+      { role: "user", content: formData.get("prompt") as string },
+      {
+        role: "model",
+        content: response.output,
+      }, // guardamos la respuesta en el historial
+    ];
+    return [
+      ...historyData,
+      {
+        prompt,
+        files,
+        filesNames,
+        model,
+        messageId,
+        supportsReasoning,
+        messages,
+      },
+    ];
   } else if (modelObj.provider === "cohere") {
     const supportsReasoning = modelObj.supportsReasoning;
     const response = await cohereAi(
@@ -143,25 +135,25 @@ const ChatFormAction = async (
     if ("error" in response) {
       return response;
     }
-    return {
-      output: response.output, // Respuesta del modelo pero accedemos de una forma mas comoda
-      history: [
-        ...history,
-        { role: "user", content: formData.get("prompt") as string },
-        { role: "model", content: response.output }, // guardamos la respuesta en el historial
-      ],
-      historyData: [
-        ...historyData,
-        {
-          prompt,
-          files,
-          model,
-          filesNames,
-          messageId,
-          supportsReasoning,
-        },
-      ],
-    };
+    const messages: GenericMessage[] = [
+      { role: "user", content: formData.get("prompt") as string },
+      {
+        role: "model",
+        content: response.output,
+      }, // guardamos la respuesta en el historial
+    ];
+    return [
+      ...historyData,
+      {
+        prompt,
+        files,
+        model,
+        filesNames,
+        messageId,
+        supportsReasoning,
+        messages,
+      },
+    ];
   }
   throw new Error("Modelo no soportado"); // Revisa los modelos en el frontend para debuggear
 };

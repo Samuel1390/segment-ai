@@ -19,6 +19,7 @@ import usePreventSelectScroll from "../../hooks/usePreventSelectScroll";
 import { Button } from "@/components/ui/button";
 import type { HistoryData } from "../../server-actions/chatFormAction";
 import getModelObj from "@/app/utils/getModelObj";
+import isOnline from "@/app/hooks/useOnline";
 import {
   HoverCard,
   HoverCardContent,
@@ -33,7 +34,6 @@ type ChatInputFormProps = {
   handleKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
   prompt: string;
   handleChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  historyString: string;
   model: ModelHashes;
   setModel: (model: ModelHashes) => void;
   isPending: boolean;
@@ -48,6 +48,7 @@ type ChatInputFormProps = {
   modelObj: Models[number];
   setModelObj: (modelObj: Models[number]) => void;
   isFormAvailable: (extracontitions: boolean[]) => boolean;
+  isOnline: boolean;
 };
 
 export default function ChatInputForm({
@@ -57,7 +58,6 @@ export default function ChatInputForm({
   handleKeyDown,
   prompt,
   handleChange,
-  historyString,
   model,
   setModel,
   isPending,
@@ -72,11 +72,16 @@ export default function ChatInputForm({
   modelObj,
   setModelObj,
   isFormAvailable,
+  isOnline,
 }: ChatInputFormProps) {
-  usePreventSelectScroll();
-
   const handleAction = (formData: FormData) => {
     files.forEach((file) => formData.append("files", file));
+
+    if (!isOnline) {
+      setFeedbackMessage("Comprueba tu conexion a internet");
+      return;
+    }
+
     action(formData);
     handleFilesChange([]);
   };
@@ -115,13 +120,6 @@ export default function ChatInputForm({
         onKeyDown={handleKeyDown}
         placeholder="Pregunta a Segment"
       />
-      {/* INPUT OCULTO PARA ENVIAR EL HISTORIAL DE LA CONVERSACION */}
-      <input
-        className="hidden"
-        name="history"
-        onChange={() => {}}
-        value={historyString}
-      />
       {/* INPUT OCULTO PARA ENVIAR LOS DATOS DEL HISTORIAL DE LA CONVERSACION EN FORMATO JSON */}
       <input
         hidden
@@ -138,11 +136,23 @@ export default function ChatInputForm({
             onValueChange={(value) => setModel(value as ModelHashes)}
             value={model}
           >
-            <SelectTrigger className="hover:cursor-pointer hover:text-neutral-700 dark:hover:text-neutral-200">
+            <SelectTrigger
+              className={cn(
+                "hover:cursor-pointer hover:text-neutral-700 dark:hover:text-neutral-200",
+                "max-xs:w-25 text-left",
+              )}
+            >
               <SelectValue
                 placeholder={
-                  <div className="flex items-center gap-2">
-                    <Settings2 /> Modelo
+                  <div className="flex items-center gap-2 min-w-0">
+                    {modelObj?.icon &&
+                      React.cloneElement(modelObj.icon, {
+                        key: `${modelObj.modelHash}-icon`,
+                        className: "shrink-0",
+                      })}
+                    <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                      {modelObj.label}
+                    </span>
                   </div>
                 }
               />

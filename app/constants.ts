@@ -33,7 +33,7 @@ export const MODELS: Models = [
     provider: "groq",
     supportsReasoning: true,
     icon: React.createElement(OpenaiIcon, {
-      className: "size-4 stroke-none outline-none fill-black dark:fill-white",
+      className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: true,
   },
@@ -45,7 +45,7 @@ export const MODELS: Models = [
     provider: "groq",
     supportsReasoning: true,
     icon: React.createElement(OpenaiIcon, {
-      className: "size-4 stroke-none outline-none fill-black dark:fill-white",
+      className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: true,
   },
@@ -56,8 +56,7 @@ export const MODELS: Models = [
     provider: "groq",
     supportsReasoning: false,
     icon: React.createElement(MetaIcon, {
-      className:
-        "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",
+      className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: false,
   },
@@ -68,8 +67,7 @@ export const MODELS: Models = [
     provider: "groq",
     supportsReasoning: false,
     icon: React.createElement(MetaIcon, {
-      className:
-        "size-4 stroke-none outline-none fill-neutral-700 dark:fill-neutral-300",
+      className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: true,
   },
@@ -90,7 +88,7 @@ export const MODELS: Models = [
     provider: "gemini",
     supportsReasoning: false,
     icon: React.createElement(GooglegeminiIcon, {
-      className: "size-4 stroke-none fill-neutral-700 dark:fill-neutral-300",
+      className: "size-4 stroke-none fill-current",
     }),
     supportsFiles: false,
   },

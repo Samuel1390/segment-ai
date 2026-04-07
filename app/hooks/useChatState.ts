@@ -6,10 +6,11 @@ import {
   RefObject,
 } from "react";
 import ChatFormAction, {
-  GenericHistory,
+  GenericMessage,
   HistoryData,
 } from "../server-actions/chatFormAction";
 import getModelObj from "../utils/getModelObj";
+import { GenericResponse } from "../server-actions/chatFormAction";
 
 export type LastUserMessage = {
   prompt: string;
@@ -18,9 +19,11 @@ export type LastUserMessage = {
 };
 
 export function useChatState() {
-  const [state, action, isPending] = useActionState(ChatFormAction, null);
+  const [state, action, isPending] = useActionState<GenericResponse, FormData>(
+    ChatFormAction,
+    [],
+  );
   const [openErrorModal, setOpenErrorModal] = useState(false);
-  const [history, setHistory] = useState<GenericHistory[]>([]);
   const [historyData, setHistoryData] = useState<HistoryData[]>([]);
   const [feedbackMessage, setFeedbackMessage] = useState<string>("");
   const [lastUserMessage, setLastUserMessage] = useState<LastUserMessage>({
@@ -28,16 +31,11 @@ export function useChatState() {
   });
 
   useEffect(() => {
-    if (state && "history" in state) {
-      setHistory(state.history);
-    }
-    if (state && "historyData" in state) {
-      setHistoryData(state.historyData);
-    }
-    if (state && "error" in state) {
+    if ("error" in state) {
       setOpenErrorModal(true);
       setFeedbackMessage("Intenta cambiar de modelo, o espera un minuto");
     }
+    setHistoryData(state as HistoryData[]);
   }, [state]);
 
   useEffect(() => {
@@ -67,7 +65,6 @@ export function useChatState() {
     isPending,
     openErrorModal,
     setOpenErrorModal,
-    history,
     feedbackMessage,
     setFeedbackMessage,
     lastUserMessage,

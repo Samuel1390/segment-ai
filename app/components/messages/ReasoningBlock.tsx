@@ -4,7 +4,7 @@ import Output from "./output/Output";
 import { Button } from "@/components/ui/button";
 import { Atom } from "lucide-react";
 import { ChevronDown } from "lucide-react";
-import type { HistoryData } from "../server-actions/chatFormAction";
+import type { HistoryData } from "../../server-actions/chatFormAction";
 
 const ReasoningBlock = ({
   reasoning,

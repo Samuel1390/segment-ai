@@ -2,16 +2,18 @@
 import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
 import usePreventSelectScroll from "../hooks/usePreventSelectScroll";
-import ModelsMessagesManager from "./ModelsMessagesManager";
+import MessagesManager from "./messages/MessagesManager";
 import Errors from "./errors/Errors";
 import ChatGreeting from "./chat/ChatGreeting";
 import ChatInputForm from "./chat/ChatInputForm";
 import { useChatState } from "../hooks/useChatState";
 import { useChatInput } from "../hooks/useChatInput";
+import useIsOnline from "../hooks/useOnline";
 
 const Chat = () => {
   usePreventSelectScroll();
   const formRef = useRef<HTMLFormElement>(null);
+  const isOnline = useIsOnline();
 
   const {
     state,
@@ -19,7 +21,6 @@ const Chat = () => {
     isPending,
     openErrorModal,
     setOpenErrorModal,
-    history,
     feedbackMessage,
     setFeedbackMessage,
     lastUserMessage,
@@ -59,11 +60,16 @@ const Chat = () => {
 
     return isFormValid;
   }
+  console.log(isOnline);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       if (isFormAvailable([])) {
         e.preventDefault();
+        if (!isOnline) {
+          setFeedbackMessage("Comprueba tu conexion a internet");
+          return;
+        }
         e.currentTarget.form?.requestSubmit();
         clearPrompt();
       } else {
@@ -84,8 +90,8 @@ const Chat = () => {
   return (
     <section
       className={cn(
-        `flex w-full justify-center h-full items-center flex-col`,
-        `overflow-y-hidden`,
+        `flex w-full justify-start h-full items-center flex-col`,
+        ``,
       )}
     >
       {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}
@@ -99,8 +105,7 @@ const Chat = () => {
 
       {/* Si hay un mensaje del usuario, se muestra el manager de modelos */}
       {lastUserMessage.prompt ? (
-        <ModelsMessagesManager
-          history={history}
+        <MessagesManager
           isPending={isPending}
           lastUserMessage={lastUserMessage}
           hasError={!!(state && "error" in state)}
@@ -114,6 +119,7 @@ const Chat = () => {
 
       {/* FORMULARIO DE ENTRADA */}
       <ChatInputForm
+        isOnline={isOnline}
         historyData={historyData}
         formRef={formRef}
         action={action}
@@ -121,7 +127,6 @@ const Chat = () => {
         handleKeyDown={handleKeyDown}
         prompt={form.prompt}
         handleChange={handleChange}
-        historyString={JSON.stringify(history)}
         model={form.model}
         files={form.files}
         handleFilesChange={handleFilesChange}

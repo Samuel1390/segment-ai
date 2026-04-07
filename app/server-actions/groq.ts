@@ -5,7 +5,7 @@ import type {
   ModelErrorObj,
 } from "../components/errors/Errors";
 import type { GroqMessage, GroqResponse } from "../types";
-import { GenericHistory } from "./chatFormAction";
+import { GenericMessage } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
 import handleFiles from "../utils/handleFiles";
 
@@ -21,7 +21,7 @@ export async function groqAI(
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
   const historyRaw = formData.get("history") as string;
-  const history: GenericHistory[] = historyRaw ? JSON.parse(historyRaw) : [];
+  const history: GenericMessage[] = historyRaw ? JSON.parse(historyRaw) : [];
   const files = formData.getAll("files") as File[];
   const weHaveFiles = files.length > 0;
 
@@ -46,7 +46,7 @@ export async function groqAI(
 
 export async function getGroqContent(
   prompt: string,
-  history: GenericHistory[],
+  history: GenericMessage[],
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
@@ -79,7 +79,7 @@ export async function getGroqContent(
   return { error: "500" };
 }
 
-function historyFormat(history: GenericHistory[]): GroqMessage[] {
+function historyFormat(history: GenericMessage[]): GroqMessage[] {
   // Aqui transformamos el historial para que sea compatible con groq
   const historyFormated = history.map((message) => {
     return {

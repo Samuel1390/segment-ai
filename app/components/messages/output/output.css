@@ -13,8 +13,9 @@
 
   line-height: 1.6;
   color: var(--text-color);
-  max-width: 850px;
+  width: 100%;
   margin: 0 auto;
+  overflow-x: hidden;
 }
 
 /* Modo Oscuro (Negro Absoluto) */
@@ -101,7 +102,8 @@
 
 /* Quitar bordes externos de la tabla si el wrapper ya los tiene */
 .model-output table {
-  border: none;
+  border-collapse: collapse;
+  width: 100%;
 }
 .model-output p,
 strong {

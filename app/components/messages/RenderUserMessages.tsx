@@ -1,6 +1,6 @@
 import { RetryIcon } from "@/components/icons/pajamas-retry";
 import { Ref } from "react";
-import { LastUserMessage } from "../hooks/useChatState";
+import { LastUserMessage } from "../../hooks/useChatState";
 import { FileIcon } from "lucide-react";
 
 const RenderUserMessage = ({
