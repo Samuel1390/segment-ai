@@ -31,10 +31,6 @@ type Props = {
 
 const MarkdownRenderer = ({ content, historyData }: Props) => {
   const { theme } = useTheme();
-  console.log(
-    "datos del historyData en el componente MarkdownRenderer: ",
-    historyData,
-  );
   const { model: modelHash } = historyData;
   const modelObj = getModelObj(modelHash);
   // Aplicamos la limpieza antes de pasarla al componente
@@ -186,7 +182,7 @@ const preprocessContent = (content: string): string => {
   );
 
   // 6. Eliminar múltiples $ consecutivos (por si acaso)
-  processed = processed.replace(/\${3,}/g, "$$");
+  processed = processed.replace(/\${3m,}/g, "$$");
 
   // 7. Normalizar \displaystyle y otros comandos que KaTeX maneja bien, pero que a veces causan espacios extra
   processed = processed.replace(/\\displaystyle\s*/g, ""); // No es necesario en $$, y en línea puede ir sin él

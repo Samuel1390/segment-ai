@@ -1,12 +1,10 @@
 "use server";
-import Groq from "groq-sdk";
 import type {
   ModelErrorType,
   ModelErrorObj,
 } from "../components/errors/Errors";
-import type { GroqMessage, GroqResponse } from "../types";
 import handleFiles from "../utils/handleFiles";
-import { GenericMessage } from "./chatFormAction";
+import { GenericMessage, HistoryData } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
 import { CohereClientV2 } from "cohere-ai";
 import { HttpResponsePromise } from "cohere-ai/core";
@@ -19,12 +17,11 @@ export async function cohereAi(
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
+  historyData: HistoryData[],
 ): Promise<CohereResponse | ModelErrorObj> {
   // Obtenemos los datos del formulario
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
-  const historyRaw = formData.get("history") as string;
-  const history: GenericMessage[] = historyRaw ? JSON.parse(historyRaw) : [];
   const files: File[] = formData.getAll("files") as File[];
 
   const weHaveFiles = files.length > 0;
@@ -32,7 +29,7 @@ export async function cohereAi(
   try {
     const response: V2ChatResponse | ModelErrorObj = await getCohereContent(
       weHaveFiles ? await handleFiles(files, prompt) : prompt,
-      history,
+      historyData,
       instruccions,
       model,
       supportsReasoning,
@@ -63,7 +60,7 @@ export async function cohereAi(
 
 export async function getCohereContent(
   prompt: string,
-  history: GenericMessage[],
+  historyData: HistoryData[],
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
@@ -75,7 +72,7 @@ export async function getCohereContent(
           role: "system",
           content: instruccions,
         },
-        ...historyFormat(history), //Le damos el historial de la conversacion formateado
+        ...historyFormat(historyData), //Le damos el historial de la conversacion formateado
         {
           role: "user",
           content: prompt,
@@ -94,16 +91,18 @@ export async function getCohereContent(
   return { error: 500 };
 }
 
-function historyFormat(history: GenericMessage[]): CohereMessage[] {
-  // Aqui transformamos el historial para que sea compatible con groq
-  const historyFormated = history.map((message) => {
-    return {
-      role:
-        message.role === "user"
-          ? "user"
-          : ("assistant" as CohereMessage["role"]),
-      content: message.content || " ",
-    };
+function historyFormat(historyData: HistoryData[]): CohereMessage[] {
+  // Aqui transformamos el historial para que sea compatible con cohere
+  const historyFormated = historyData.flatMap(({ messages }) => {
+    return messages.map((message) => {
+      return {
+        role:
+          message.role === "user"
+            ? "user"
+            : ("assistant" as CohereMessage["role"]),
+        content: message.content || " ",
+      };
+    });
   });
   return historyFormated;
 }

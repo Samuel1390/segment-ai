@@ -5,7 +5,7 @@ import type {
   ModelErrorObj,
 } from "../components/errors/Errors";
 import type { GroqMessage, GroqResponse } from "../types";
-import { GenericMessage } from "./chatFormAction";
+import { GenericMessage, HistoryData } from "./chatFormAction";
 import type { ModelHashes } from "../constants";
 import handleFiles from "../utils/handleFiles";
 
@@ -16,19 +16,18 @@ export async function groqAI(
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
+  historyData: HistoryData[],
 ): Promise<GroqResponse | ModelErrorObj> {
   // Obtenemos los datos del formulario
   const prompt = formData.get("prompt") as string;
   const tool = formData.get("tool") as string;
-  const historyRaw = formData.get("history") as string;
-  const history: GenericMessage[] = historyRaw ? JSON.parse(historyRaw) : [];
   const files = formData.getAll("files") as File[];
   const weHaveFiles = files.length > 0;
 
   const response: Groq.Chat.Completions.ChatCompletion | ModelErrorObj =
     await getGroqContent(
       weHaveFiles ? await handleFiles(files, prompt) : prompt,
-      history,
+      historyData,
       instruccions,
       model,
       supportsReasoning,
@@ -46,7 +45,7 @@ export async function groqAI(
 
 export async function getGroqContent(
   prompt: string,
-  history: GenericMessage[],
+  historyData: HistoryData[],
   instruccions: string,
   model: ModelHashes,
   supportsReasoning: boolean,
@@ -59,7 +58,7 @@ export async function getGroqContent(
             role: "system",
             content: instruccions,
           },
-          ...historyFormat(history), //Le damos el historial de la conversacion formateado
+          ...historyFormat(historyData), //Le damos el historial de la conversacion formateado
           {
             role: "user",
             content: prompt,
@@ -79,14 +78,15 @@ export async function getGroqContent(
   return { error: "500" };
 }
 
-function historyFormat(history: GenericMessage[]): GroqMessage[] {
+function historyFormat(historyData: HistoryData[]): GroqMessage[] {
   // Aqui transformamos el historial para que sea compatible con groq
-  const historyFormated = history.map((message) => {
-    return {
-      role:
-        message.role === "user" ? "user" : ("assistant" as GroqMessage["role"]),
-      content: message.content || " ",
-    };
+  const historyFormated = historyData.flatMap(({ messages }) => {
+    return messages.map(({ role, content }) => {
+      return {
+        role: role === "user" ? "user" : ("assistant" as GroqMessage["role"]),
+        content: content || " ",
+      };
+    });
   });
   return historyFormated;
 }

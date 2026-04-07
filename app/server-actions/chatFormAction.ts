@@ -68,6 +68,7 @@ const ChatFormAction = async (
       instruccions,
       model,
       supportsReasoning,
+      historyData,
     );
     if ("error" in response) {
       return response; // { error: "500" | "401" | "404" | "429" | ... } cada uno con su mensaje de error delarado en Errors.tsx
@@ -101,6 +102,7 @@ const ChatFormAction = async (
       instruccions,
       model,
       supportsReasoning,
+      historyData,
     );
     if ("error" in response) {
       return response;
@@ -131,6 +133,7 @@ const ChatFormAction = async (
       instruccions,
       model,
       supportsReasoning,
+      historyData,
     );
     if ("error" in response) {
       return response;

@@ -42,6 +42,8 @@ const Chat = () => {
     setModelObj,
   } = useChatInput(setFeedbackMessage);
 
+  console.log(historyData);
+
   function isFormAvailable([...extraConditions]: boolean[]): boolean {
     // Esta funcion se encarga de validar si el formulario esta listo para ser enviado
     const isFilesAvailable =
