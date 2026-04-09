@@ -2,7 +2,7 @@
 import type {
   ModelErrorType,
   ModelErrorObj,
-} from "../components/errors/Errors";
+} from "../components/errors/BackendErrors";
 import handleFiles from "../utils/handleFiles";
 import { GenericMessage, HistoryData } from "./chatFormAction";
 import type { ModelHashes } from "../constants";

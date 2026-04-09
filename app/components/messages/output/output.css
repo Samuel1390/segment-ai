@@ -64,8 +64,6 @@
   width: 100%;
   overflow-x: auto;
   margin: 2rem 0;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
 }
 
 .model-output table {

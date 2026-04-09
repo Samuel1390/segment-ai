@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import groqAI from "./groq";
-import type { ModelErrorObj } from "../components/errors/Errors";
+import type { ModelErrorObj } from "../components/errors/BackendErrors";
 import gemini from "./gemini";
 import type { ModelHashes } from "../constants";
 import cohereAi from "./cohere";
@@ -71,7 +71,7 @@ const ChatFormAction = async (
       historyData,
     );
     if ("error" in response) {
-      return response; // { error: "500" | "401" | "404" | "429" | ... } cada uno con su mensaje de error delarado en Errors.tsx
+      return response; // { error: 500 | 401 | 404 | 429 | ... } cada uno con su mensaje de error delarado en Errors.tsx
     }
     const messages: GenericMessage[] = [
       { role: "user", content: formData.get("prompt") as string },

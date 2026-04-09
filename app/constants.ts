@@ -71,16 +71,16 @@ export const MODELS: Models = [
     }),
     supportsFiles: true,
   },
-  {
-    label: "Compound",
-    description:
-      "Excelente para investigaciones en la web, integra gpt y llama",
-    modelHash: "groq/compound",
-    provider: "groq",
-    supportsReasoning: false,
-    icon: React.createElement(GroqIcon, {}),
-    supportsFiles: true,
-  },
+  // {
+  //   label: "Compound",
+  //   description:
+  //     "Excelente para investigaciones en la web, integra gpt y llama",
+  //   modelHash: "groq/compound",
+  //   provider: "groq",
+  //   supportsReasoning: false,
+  //   icon: React.createElement(GroqIcon, {}),
+  //   supportsFiles: true,
+  // },
   {
     label: "Gemini 2.5 Flash",
     description: "Rápido y eficiente",
@@ -94,12 +94,13 @@ export const MODELS: Models = [
   },
   {
     label: "Command A03 2025",
-    description: "Rápido y eficiente",
+    description:
+      "Especializado en RAG (Retrieval-Augmented Generation) para conversaciones largas",
     modelHash: "command-a-03-2025",
     provider: "cohere",
     supportsReasoning: false,
     icon: React.createElement(CohereIcon, {}),
-    supportsFiles: false,
+    supportsFiles: true,
   },
 ];
 

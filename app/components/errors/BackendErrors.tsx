@@ -4,10 +4,11 @@ import {
   AlertDialogContent,
   AlertDialogTitle,
   AlertDialogDescription,
-  AlertDialogCancel,
   AlertDialogFooter,
   AlertDialogAction,
+  AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
+import { RefreshCcw } from "lucide-react";
 import React from "react";
 import {
   InfoIcon,
@@ -120,12 +121,13 @@ export const MODEL_ERRORS = [
 export type ModelErrorType = (typeof MODEL_ERRORS)[number]["code"];
 export type ModelErrorObj = { error: ModelErrorType };
 interface ModelErrorProps {
-  code: ModelErrorType;
+  code: ModelErrorType | null;
   open: boolean;
   setOpen: (value: boolean) => void;
+  onRetry?: () => void;
 }
 
-function ModelError({ code, open, setOpen }: ModelErrorProps) {
+function ModelError({ code, open, setOpen, onRetry }: ModelErrorProps) {
   let error = MODEL_ERRORS.find((error) => error.code == code);
   if (!error) {
     error = MODEL_ERRORS[MODEL_ERRORS.length - 1]; // Desconocido
@@ -144,9 +146,21 @@ function ModelError({ code, open, setOpen }: ModelErrorProps) {
           <InfoIcon size={13} className="inline-block" /> Tip: {error.tip}
         </AlertDialogDescription>
         <AlertDialogFooter>
-          <AlertDialogAction onClick={() => setOpen(false)}>
-            Aceptar
-          </AlertDialogAction>
+          <AlertDialogCancel onClick={() => setOpen(false)}>
+            Cerrar
+          </AlertDialogCancel>
+          {onRetry && (
+            <AlertDialogAction
+              onClick={() => {
+                setOpen(false);
+                onRetry();
+              }}
+              className="flex items-center gap-2"
+            >
+              <RefreshCcw size={14} />
+              Reintentar
+            </AlertDialogAction>
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

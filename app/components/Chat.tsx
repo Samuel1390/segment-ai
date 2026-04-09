@@ -1,9 +1,8 @@
 "use client";
 import React, { useRef } from "react";
 import { cn } from "@/lib/utils";
-import usePreventSelectScroll from "../hooks/usePreventSelectScroll";
 import MessagesManager from "./messages/MessagesManager";
-import Errors from "./errors/Errors";
+import Errors from "./errors/BackendErrors";
 import ChatGreeting from "./chat/ChatGreeting";
 import ChatInputForm from "./chat/ChatInputForm";
 import { useChatState } from "../hooks/useChatState";
@@ -11,7 +10,6 @@ import { useChatInput } from "../hooks/useChatInput";
 import useIsOnline from "../hooks/useOnline";
 
 const Chat = () => {
-  usePreventSelectScroll();
   const formRef = useRef<HTMLFormElement>(null);
   const isOnline = useIsOnline();
 
@@ -21,12 +19,18 @@ const Chat = () => {
     isPending,
     openErrorModal,
     setOpenErrorModal,
+    errorCode,
     feedbackMessage,
     setFeedbackMessage,
     lastUserMessage,
     setLastMessage,
     retry,
     historyData,
+    // Streaming
+    isStreaming,
+    streamingContent,
+    streamingModel,
+    sendStreamingMessage,
   } = useChatState();
 
   const {
@@ -42,8 +46,6 @@ const Chat = () => {
     setModelObj,
   } = useChatInput(setFeedbackMessage);
 
-  console.log(historyData);
-
   function isFormAvailable([...extraConditions]: boolean[]): boolean {
     // Esta funcion se encarga de validar si el formulario esta listo para ser enviado
     const isFilesAvailable =
@@ -52,7 +54,7 @@ const Chat = () => {
 
     const weHavePrompt = form.prompt.trim().length > 0;
 
-    const readyToSend = !(isPending || formLoading);
+    const readyToSend = !(isPending || isStreaming || formLoading);
 
     const isFormValid =
       isFilesAvailable &&
@@ -62,7 +64,6 @@ const Chat = () => {
 
     return isFormValid;
   }
-  console.log(isOnline);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -97,22 +98,24 @@ const Chat = () => {
       )}
     >
       {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}
-      {state && "error" in state && (
-        <Errors
-          code={state.error}
-          open={openErrorModal}
-          setOpen={setOpenErrorModal}
-        />
-      )}
+      <Errors
+        code={errorCode ?? (state && "error" in state ? state.error : null)}
+        open={openErrorModal}
+        setOpen={setOpenErrorModal}
+        onRetry={() => retry(formRef)}
+      />
 
       {/* Si hay un mensaje del usuario, se muestra el manager de modelos */}
       {lastUserMessage.prompt ? (
         <MessagesManager
           isPending={isPending}
           lastUserMessage={lastUserMessage}
-          hasError={!!(state && "error" in state)}
+          hasError={!!errorCode || !!(state && "error" in state)}
           onRetry={() => retry(formRef)}
           historyData={historyData}
+          isStreaming={isStreaming}
+          streamingContent={streamingContent}
+          streamingModel={streamingModel}
         />
       ) : (
         /* Si no hay un mensaje del usuario, se muestra el saludo inicial dandole la bienvenida a nuestro usuario*/
@@ -142,6 +145,8 @@ const Chat = () => {
         modelObj={modelObj}
         setModelObj={setModelObj}
         isFormAvailable={isFormAvailable}
+        isStreaming={isStreaming}
+        sendStreamingMessage={sendStreamingMessage}
       />
     </section>
   );

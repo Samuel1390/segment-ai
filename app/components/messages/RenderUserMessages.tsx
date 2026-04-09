@@ -3,17 +3,19 @@ import { Ref } from "react";
 import { LastUserMessage } from "../../hooks/useChatState";
 import { FileIcon } from "lucide-react";
 
+interface RenderUserMessageProps {
+  userMessage: LastUserMessage;
+  failed?: boolean;
+  retry?: () => void;
+  ref?: Ref<HTMLDivElement>;
+}
+
 const RenderUserMessage = ({
   userMessage,
   failed,
   retry,
   ref,
-}: {
-  userMessage: LastUserMessage;
-  failed?: boolean;
-  retry?: () => void;
-  ref?: Ref<HTMLDivElement>;
-}) => {
+}: RenderUserMessageProps) => {
   return (
     <div className="w-full flex flex-col items-end gap-1 mb-4" ref={ref}>
       <div

@@ -2,7 +2,10 @@
 import { GenerativeModel, GoogleGenerativeAI } from "@google/generative-ai";
 import type { GeminiMessage, GeminiResponse } from "../types";
 import type { Models } from "../types";
-import { ModelErrorType, ModelErrorObj } from "../components/errors/Errors";
+import {
+  ModelErrorType,
+  ModelErrorObj,
+} from "../components/errors/BackendErrors";
 import { GenericMessage, HistoryData } from "./chatFormAction";
 import { ModelHashes } from "../constants";
 import handleFiles from "../utils/handleFiles";
@@ -35,7 +38,11 @@ export async function gemini(
       topP: 0.95,
     },
   });
-  return await generateText(promptWithFiles || prompt, historyData, geminiModel);
+  return await generateText(
+    promptWithFiles || prompt,
+    historyData,
+    geminiModel,
+  );
 }
 
 async function generateText(

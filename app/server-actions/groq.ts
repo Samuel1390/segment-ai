@@ -3,7 +3,7 @@ import Groq from "groq-sdk";
 import type {
   ModelErrorType,
   ModelErrorObj,
-} from "../components/errors/Errors";
+} from "../components/errors/BackendErrors";
 import type { GroqMessage, GroqResponse } from "../types";
 import { GenericMessage, HistoryData } from "./chatFormAction";
 import type { ModelHashes } from "../constants";

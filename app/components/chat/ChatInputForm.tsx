@@ -49,6 +49,8 @@ type ChatInputFormProps = {
   setModelObj: (modelObj: Models[number]) => void;
   isFormAvailable: (extracontitions: boolean[]) => boolean;
   isOnline: boolean;
+  isStreaming: boolean;
+  sendStreamingMessage: (formData: FormData) => Promise<void>;
 };
 
 export default function ChatInputForm({
@@ -73,6 +75,8 @@ export default function ChatInputForm({
   setModelObj,
   isFormAvailable,
   isOnline,
+  isStreaming,
+  sendStreamingMessage,
 }: ChatInputFormProps) {
   const handleAction = (formData: FormData) => {
     files.forEach((file) => formData.append("files", file));
@@ -82,7 +86,7 @@ export default function ChatInputForm({
       return;
     }
 
-    action(formData);
+    sendStreamingMessage(formData);
     handleFilesChange([]);
   };
 
@@ -90,10 +94,14 @@ export default function ChatInputForm({
     <form
       ref={formRef as any}
       onSubmit={handleSubmit}
+      style={{
+        left: "calc(50% - 9px)",
+        transform: "translateX(-50%)",
+      }}
       className={cn(
         "w-full shadow-[0_-10px_40px_#fff] dark:shadow-[0_-10px_40px_#000]",
         "max-w-[780px] rounded-lg",
-        "left-1/2 -translate-x-1/2 bg-neutral-50 dark:bg-neutral-900 fixed",
+        " bg-neutral-50 dark:bg-neutral-900 fixed",
         "z-50 bottom-0 px-4 lg:px-7",
       )}
       action={handleAction}
@@ -256,7 +264,7 @@ export default function ChatInputForm({
               "rounded-full disabled:cursor-not-allowed",
               "flex items-center justify-center",
             )}
-            disabled={!isFormAvailable([])}
+            disabled={!isFormAvailable([]) || isStreaming}
             type="submit"
           >
             {formLoading ? (

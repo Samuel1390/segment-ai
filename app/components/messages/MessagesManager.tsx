@@ -6,6 +6,8 @@ import React, { useEffect, useRef } from "react";
 import ReasoningBlock from "./ReasoningBlock";
 import { LastUserMessage } from "../../hooks/useChatState";
 import type { HistoryData } from "../../server-actions/chatFormAction";
+import type { ModelHashes } from "../../constants";
+import { cn } from "@/lib/utils";
 
 type MessagesManagerProps = {
   isPending: boolean;
@@ -13,6 +15,9 @@ type MessagesManagerProps = {
   hasError?: boolean;
   onRetry?: () => void;
   historyData: HistoryData[];
+  isStreaming?: boolean;
+  streamingContent?: string;
+  streamingModel?: ModelHashes | null;
 };
 
 function MessagesManager({
@@ -21,6 +26,9 @@ function MessagesManager({
   hasError,
   onRetry,
   historyData,
+  isStreaming = false,
+  streamingContent = "",
+  streamingModel = null,
 }: MessagesManagerProps) {
   const userMessageRef = useRef<HTMLDivElement>(null);
 
@@ -36,10 +44,15 @@ function MessagesManager({
     }, 100);
 
     return () => clearTimeout(timeout);
-  }, [lastUserMessage, historyData.length, isPending, hasError]);
+  }, [lastUserMessage, historyData.length, isPending, hasError, isStreaming]);
 
   return (
-    <article className="mb-28 w-full overflow-y-hidden overflow-x-auto lg:px-0 px-2 pb-10">
+    <article
+      className={cn(
+        "mb-28 w-full overflow-y-hidden overflow-x-auto lg:px-0 px-2 pb-10",
+        streamingContent && "scroll-smooth",
+      )}
+    >
       {historyData.map((data) => {
         return data.messages.map((message, index) => {
           if (message.role === "user") {
@@ -47,13 +60,20 @@ function MessagesManager({
             return (
               <RenderUserMessage
                 ref={
-                  isLastRenderedUserMsg && !isPending && !hasError
+                  // Verificamos que sea el último mensaje renderizado
+                  // que este completo (no sea parte de un streaming) y que no haya errores
+                  isLastRenderedUserMsg &&
+                  !isPending &&
+                  !hasError &&
+                  !isStreaming
                     ? (userMessageRef as any)
                     : undefined
                 }
                 key={`user-message-${data.messageId}-${index}`}
                 userMessage={{
                   prompt: message.content,
+                  files: data.files, // puede ser undefined
+                  filesNames: data.filesNames, // puede ser undefined
                 }}
               />
             );
@@ -77,15 +97,34 @@ function MessagesManager({
           }
         });
       })}
-      {(isPending || hasError) && (
+      {/* Mensaje del usuario mientras se espera respuesta (pending o streaming) */}
+      {(isPending || isStreaming || hasError) && (
         <RenderUserMessage
           ref={userMessageRef as any}
           userMessage={lastUserMessage}
-          failed={hasError && !isPending}
+          failed={hasError && !isPending && !isStreaming}
           retry={onRetry}
         />
       )}
-      {isPending && (
+      {/* Contenido streaming: renderizar el texto parcial del modelo */}
+      {isStreaming && streamingContent && (
+        <div className="streaming-output">
+          <Output
+            historyData={
+              {
+                prompt: lastUserMessage.prompt,
+                messageId: "streaming",
+                model: streamingModel || "llama-3.3-70b-versatile",
+                supportsReasoning: false,
+                messages: [],
+              } as HistoryData
+            }
+            content={streamingContent}
+          />
+        </div>
+      )}
+      {/* Spinner cuando no hay contenido aún */}
+      {(isPending || (isStreaming && !streamingContent)) && (
         <div className="flex gap-2 items-center">
           <Logo size={16} className="animate-spin" />
           <p className="text-sm dark:text-neutral-300 animate-pulse">

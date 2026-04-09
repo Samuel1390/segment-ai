@@ -7,7 +7,14 @@ body {
   padding: 0;
   overflow-x: hidden;
   height: 100dvh;
+  width: 100dvw;
+  scrollbar-color: #ddd #fff;
 }
+body {
+  overflow-y: scroll;
+  scrollbar-gutter: stable !important;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -125,6 +132,10 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  body,
+  html {
+    scrollbar-color: #111 #000;
+  }
 }
 
 @layer base {
