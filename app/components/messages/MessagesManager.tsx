@@ -107,6 +107,14 @@ function MessagesManager({
         />
       )}
       {/* Contenido streaming: renderizar el texto parcial del modelo */}
+      {(isPending || isStreaming) && (
+        <div className="flex gap-2 items-center">
+          <Logo size={16} className="animate-spin" />
+          <p className="text-sm dark:text-neutral-300 animate-pulse">
+            Pensando...
+          </p>
+        </div>
+      )}
       {isStreaming && streamingContent && (
         <div className="streaming-output">
           <Output
@@ -123,15 +131,7 @@ function MessagesManager({
           />
         </div>
       )}
-      {/* Spinner cuando no hay contenido aún */}
-      {(isPending || (isStreaming && !streamingContent)) && (
-        <div className="flex gap-2 items-center">
-          <Logo size={16} className="animate-spin" />
-          <p className="text-sm dark:text-neutral-300 animate-pulse">
-            Pensando...
-          </p>
-        </div>
-      )}
+      {/* Spinner cuando no hay contenido o no esta completo */}
     </article>
   );
 }
