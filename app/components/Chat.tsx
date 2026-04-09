@@ -89,7 +89,6 @@ const Chat = () => {
     });
     clearPrompt();
   };
-  throw new Error("Error para probar el manejo de errores");
 
   return (
     <section
