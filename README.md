@@ -100,7 +100,6 @@ Desarrollado con ❤️ por Samuel Nelo - Estudiante de Computación, FACYT, UC.
 ├── globals.css
 ├── hooks
 │   ├── useCopyClipboard.ts
-│   ├── usePreventSelectScroll.ts
 │   ├── useRecorder.ts
 │   └── useTheme.ts
 ├── icon.png

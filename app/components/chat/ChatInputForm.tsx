@@ -15,7 +15,6 @@ import { Send, Settings2, X, FileIcon, Loader2 } from "lucide-react";
 import Microphone from "../Microphone";
 import { MODELS } from "../../constants";
 import { ModelHashes } from "../../constants";
-import usePreventSelectScroll from "../../hooks/usePreventSelectScroll";
 import { Button } from "@/components/ui/button";
 import type { HistoryData } from "../../server-actions/chatFormAction";
 import getModelObj from "@/app/utils/getModelObj";
