@@ -22,6 +22,9 @@ export type Models = Array<{
   supportsReasoning: boolean;
   icon?: React.JSX.Element;
   supportsFiles: boolean;
+  supportsTools: boolean;
+  supportsBrowserSearch: boolean;
+  nativeBrowserSearchFunctionality: boolean;
 }>;
 
 export const MODELS: Models = [
@@ -36,6 +39,9 @@ export const MODELS: Models = [
       className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: true,
+    supportsTools: true,
+    supportsBrowserSearch: true,
+    nativeBrowserSearchFunctionality: false,
   },
   {
     label: "OpenAI GPT OSS 120B",
@@ -48,6 +54,9 @@ export const MODELS: Models = [
       className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: true,
+    supportsTools: true,
+    supportsBrowserSearch: true,
+    nativeBrowserSearchFunctionality: false,
   },
   {
     label: "Llama 3.1 8B",
@@ -59,6 +68,9 @@ export const MODELS: Models = [
       className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: false,
+    supportsTools: false,
+    supportsBrowserSearch: false,
+    nativeBrowserSearchFunctionality: true,
   },
   {
     label: "Llama 3.3 70B",
@@ -70,6 +82,9 @@ export const MODELS: Models = [
       className: "size-4 stroke-none outline-none fill-current",
     }),
     supportsFiles: true,
+    supportsTools: false,
+    supportsBrowserSearch: false,
+    nativeBrowserSearchFunctionality: true,
   },
   // {
   //   label: "Compound",
@@ -91,6 +106,9 @@ export const MODELS: Models = [
       className: "size-4 stroke-none fill-current",
     }),
     supportsFiles: false,
+    supportsTools: false,
+    supportsBrowserSearch: false,
+    nativeBrowserSearchFunctionality: true,
   },
   {
     label: "Command A03 2025",
@@ -101,6 +119,9 @@ export const MODELS: Models = [
     supportsReasoning: false,
     icon: React.createElement(CohereIcon, {}),
     supportsFiles: true,
+    supportsTools: false,
+    supportsBrowserSearch: false,
+    nativeBrowserSearchFunctionality: true,
   },
 ];
 

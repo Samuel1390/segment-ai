@@ -117,7 +117,10 @@ export function useChatInput(setFeedbackMessage: (msg: string) => void) {
           setFormLoading(false);
           return;
         }
-        setForm((prev) => ({ ...prev, files: [...prev.files, file] }));
+        setForm((prev) => {
+          const newFiles = prev.files.filter((f) => f.name !== file.name);
+          return { ...prev, files: [...newFiles, file] };
+        });
       } catch (err) {
         console.log(err);
         setFeedbackMessage(

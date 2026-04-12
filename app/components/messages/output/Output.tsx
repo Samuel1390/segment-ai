@@ -8,7 +8,13 @@ import "katex/dist/katex.min.css";
 import CopyButton, { SimpleCopyButton } from "./CopyButton";
 import getModelObj from "@/app/utils/getModelObj";
 import "./output.css";
+import {
+  GoogleSearch,
+  ComplexProblems,
+  FileSupport,
+} from "./ModelCapabilities";
 import type { HistoryData } from "@/app/server-actions/chatFormAction";
+
 import {
   oneLight,
   oneDark,
@@ -100,11 +106,17 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
         <div className="text-md text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
           Modelo: {modelObj.label} {modelObj?.icon && modelObj.icon}
         </div>
-        <SimpleCopyButton
-          hoverContent="Copiar markdown"
-          copiedContent="Markdown copiado!"
-          content={content}
-        />
+        <span className="flex items-center gap-2">
+          {(modelObj.supportsBrowserSearch ||
+            modelObj.nativeBrowserSearchFunctionality) && <GoogleSearch />}
+          {modelObj.supportsReasoning && <ComplexProblems />}
+          {modelObj.supportsFiles && <FileSupport />}
+          <SimpleCopyButton
+            hoverContent="Copiar markdown"
+            copiedContent="Markdown copiado!"
+            content={content}
+          />
+        </span>
       </div>
     </div>
   );

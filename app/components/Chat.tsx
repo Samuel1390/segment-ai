@@ -91,36 +91,38 @@ const Chat = () => {
   };
 
   return (
-    <section
-      className={cn(
-        `flex w-full justify-start h-full items-center flex-col`,
-        ``,
-      )}
-    >
-      {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}
-      <Errors
-        code={errorCode ?? (state && "error" in state ? state.error : null)}
-        open={openErrorModal}
-        setOpen={setOpenErrorModal}
-        onRetry={() => retry(formRef)}
-      />
-
-      {/* Si hay un mensaje del usuario, se muestra el manager de modelos */}
-      {lastUserMessage.prompt ? (
-        <MessagesManager
-          isPending={isPending}
-          lastUserMessage={lastUserMessage}
-          hasError={!!errorCode || !!(state && "error" in state)}
+    <>
+      <section
+        className={cn(
+          `flex w-full flex-1 min-h-[0] justify-start items-center flex-col overflow-y-auto `,
+          ``,
+        )}
+      >
+        {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}
+        <Errors
+          code={errorCode ?? (state && "error" in state ? state.error : null)}
+          open={openErrorModal}
+          setOpen={setOpenErrorModal}
           onRetry={() => retry(formRef)}
-          historyData={historyData}
-          isStreaming={isStreaming}
-          streamingContent={streamingContent}
-          streamingModel={streamingModel}
         />
-      ) : (
-        /* Si no hay un mensaje del usuario, se muestra el saludo inicial dandole la bienvenida a nuestro usuario*/
-        <ChatGreeting />
-      )}
+
+        {/* Si hay un mensaje del usuario, se muestra el manager de modelos */}
+        {lastUserMessage.prompt ? (
+          <MessagesManager
+            isPending={isPending}
+            lastUserMessage={lastUserMessage}
+            hasError={!!errorCode || !!(state && "error" in state)}
+            onRetry={() => retry(formRef)}
+            historyData={historyData}
+            isStreaming={isStreaming}
+            streamingContent={streamingContent}
+            streamingModel={streamingModel}
+          />
+        ) : (
+          /* Si no hay un mensaje del usuario, se muestra el saludo inicial dandole la bienvenida a nuestro usuario*/
+          <ChatGreeting />
+        )}
+      </section>
 
       {/* FORMULARIO DE ENTRADA */}
       <ChatInputForm
@@ -148,7 +150,7 @@ const Chat = () => {
         isStreaming={isStreaming}
         sendStreamingMessage={sendStreamingMessage}
       />
-    </section>
+    </>
   );
 };
 

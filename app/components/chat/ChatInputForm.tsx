@@ -1,29 +1,14 @@
 import React, { RefObject } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { Paperclip } from "lucide-react";
 import type { Models } from "../../constants";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectGroup,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Send, Settings2, X, FileIcon, Loader2 } from "lucide-react";
+import ModelsSelect from "./ModelsSelect";
 import Microphone from "../Microphone";
-import { MODELS } from "../../constants";
 import { ModelHashes } from "../../constants";
-import { Button } from "@/components/ui/button";
 import type { HistoryData } from "../../server-actions/chatFormAction";
-import getModelObj from "@/app/utils/getModelObj";
+import LoadFilesButton from "./LoadFilesButton";
 import isOnline from "@/app/hooks/useOnline";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import SendButton from "./SendButton";
 import Attachments from "./Attachments";
 
 type ChatInputFormProps = {
@@ -100,7 +85,7 @@ export default function ChatInputForm({
       className={cn(
         "w-full shadow-[0_-10px_40px_#fff] dark:shadow-[0_-10px_40px_#000]",
         "max-w-[780px] rounded-lg",
-        " bg-neutral-50 dark:bg-neutral-900 fixed",
+        "bg-neutral-50 dark:bg-neutral-900 absolute",
         "z-50 bottom-0 px-4 lg:px-7",
       )}
       action={handleAction}
@@ -108,9 +93,7 @@ export default function ChatInputForm({
       {/* CONTENEDOR SUPERIOR PARA LOS MENSAJES DE FEEDBACK Y ARCHIVOS ADJUNTOS */}
       <div className="absolute bottom-full">
         {/* ARCHIVOS ADJUNTOS */}
-        {files.length > 0 && (
-          <Attachments files={files} setForm={setForm} modelObj={modelObj} />
-        )}
+        <Attachments files={files} setForm={setForm} modelObj={modelObj} />
         {/* MENSAJE DE FEEDBACK QUE SE LE MOSTRARA AL USUARIO PARA GUIARLO*/}
         {feedbackMessage && (
           <p className="text-amber-600 h-fit dark:text-amber-400 text-sm">
@@ -138,116 +121,15 @@ export default function ChatInputForm({
       <div className="flex items-center justify-between py-7 px-1 w-full h-7">
         <div className="flex items-center gap-2">
           {/* SELECTOR DE MODELOS */}
-          <Select
-            name="model"
-            onValueChange={(value) => setModel(value as ModelHashes)}
-            value={model}
-          >
-            <SelectTrigger
-              className={cn(
-                "hover:cursor-pointer hover:text-neutral-700 dark:hover:text-neutral-200",
-                "max-xs:w-25 text-left",
-              )}
-            >
-              <SelectValue
-                placeholder={
-                  <div className="flex items-center gap-2 min-w-0">
-                    {modelObj?.icon &&
-                      React.cloneElement(modelObj.icon, {
-                        key: `${modelObj.modelHash}-icon`,
-                        className: "shrink-0",
-                      })}
-                    <span className="truncate whitespace-nowrap overflow-hidden text-ellipsis">
-                      {modelObj.label}
-                    </span>
-                  </div>
-                }
-              />
-            </SelectTrigger>
-            <SelectContent
-              onMouseDown={(e) => e.preventDefault()}
-              className="-top-10 popper"
-            >
-              <SelectGroup>
-                {/* MAPEO DE MODELOS */}
-                {MODELS.map((mdl) => {
-                  return (
-                    <SelectItem
-                      key={`${mdl.modelHash}-${mdl.label}`}
-                      value={mdl.modelHash}
-                      className="hover:cursor-pointer"
-                      description={mdl.description}
-                    >
-                      <div className="flex items-center gap-2">
-                        {mdl?.icon &&
-                          React.cloneElement(mdl.icon, {
-                            key: `${mdl.modelHash}-icon`,
-                          })}
-                        {mdl.label}
-                      </div>
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {/* INPUT PARA SUBIR ARCHIVOS DEL USUARIO*/}
-          <input
-            type="file"
-            id="file-input"
-            className="hidden"
-            multiple
-            disabled={files.length >= 3 || !getModelObj(model).supportsFiles}
-            onChange={(e) => {
-              if (e.target.files) {
-                const newFiles = Array.from(e.target.files);
-                const combinedFiles = [...files, ...newFiles];
-                if (combinedFiles.length > 3) {
-                  setFeedbackMessage("Solo puedes subir hasta 3 archivos");
-                }
-                handleFilesChange(combinedFiles.slice(0, 3));
-              }
-              e.target.value = "";
-            }}
+          <ModelsSelect model={model} setModel={setModel} modelObj={modelObj} />
+          {/* BOTON ESTÉTICO PARA QUE EL USUARIO PUEDA SUBIR ARCHIVOS */}
+          <LoadFilesButton
+            files={files}
+            modelObj={modelObj}
+            setFeedbackMessage={setFeedbackMessage}
+            handleFilesChange={handleFilesChange}
+            model={model}
           />
-          {/* BOTON ESTÉTICO PARA ABRIR EL INPUT DE ARCHIVOS */}
-          <HoverCard>
-            <HoverCardTrigger>
-              <Button
-                className="p-0"
-                variant={"outline"}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  document.getElementById("file-input")?.click();
-                }}
-              >
-                <span
-                  className={cn(
-                    "p-2 flex h-full w-full items-center justify-center",
-                    files.length >= 3 || !modelObj.supportsFiles
-                      ? "cursor-not-allowed opacity-50"
-                      : "cursor-pointer",
-                  )}
-                  onClick={() => {
-                    if (!modelObj.supportsFiles) {
-                      setFeedbackMessage(
-                        "El modelo actual no soporta archivos, cambia de modelo para poder usar esta funcionalidad",
-                      );
-                    } else if (files.length >= 3) {
-                      setFeedbackMessage("Solo puedes subir hasta 3 archivos");
-                    }
-                  }}
-                >
-                  <Paperclip />
-                </span>
-              </Button>
-            </HoverCardTrigger>
-            <HoverCardContent>
-              Puedes subir hasta 3 archivos de texto con un tamaño máximo de
-              30mb cada uno.
-            </HoverCardContent>
-          </HoverCard>
         </div>
         <div className="flex items-center max-sm:gap-1 max-sm:scale-90 gap-2">
           <Microphone
@@ -255,23 +137,11 @@ export default function ChatInputForm({
             recorder={recorder}
           />
           {/* BOTON DE ENVIAR */}
-          <button
-            className={cn(
-              "disabled:opacity-50 p-2 dark:bg-white dark:text-black",
-              "transition-colors",
-              "bg-black text-white hover:bg-neutral-900 dark:hover:bg-neutral-200",
-              "rounded-full disabled:cursor-not-allowed",
-              "flex items-center justify-center",
-            )}
-            disabled={!isFormAvailable([]) || isStreaming}
-            type="submit"
-          >
-            {formLoading ? (
-              <Loader2 className="animate-spin" size={20} />
-            ) : (
-              <Send size={20} />
-            )}
-          </button>
+          <SendButton
+            formLoading={formLoading}
+            isFormAvailable={isFormAvailable}
+            isStreaming={isStreaming}
+          />
         </div>
       </div>
     </form>

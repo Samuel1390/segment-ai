@@ -49,7 +49,7 @@ function MessagesManager({
   return (
     <article
       className={cn(
-        "mb-28 w-full overflow-y-hidden overflow-x-auto lg:px-0 px-2 pb-10",
+        "mb-28 w-full overflow-y-auto overflow-x-auto lg:px-0 px-2 pb-10",
         streamingContent && "scroll-smooth",
       )}
     >

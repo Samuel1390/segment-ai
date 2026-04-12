@@ -8,6 +8,7 @@ import type { HistoryData } from "../../server-actions/chatFormAction";
 import type { GroqMessage, GeminiMessage, CohereMessage } from "../../types";
 import handleFiles from "../../utils/handleFiles";
 import getModelObj from "../../utils/getModelObj";
+import { ChatCompletionTool } from "groq-sdk/resources/chat/completions";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
@@ -63,6 +64,21 @@ export async function POST(request: Request) {
 
     const finalPrompt = weHaveFiles ? await handleFiles(files, prompt) : prompt;
 
+    const handleTools = (): ChatCompletionTool[] | null | undefined => {
+      // Esta funcion maneja los casos en los que los modelos soportan o no herramientas
+      if (modelObj.supportsTools) {
+        const tools: ChatCompletionTool[] = [];
+        if (modelObj.supportsBrowserSearch) {
+          tools.push({
+            type: "browser_search",
+          });
+        }
+        return tools;
+      }
+      return null;
+    };
+    console.log("handleTools result", handleTools());
+
     // Crear el ReadableStream que escribirá eventos SSE
     const encoder = new TextEncoder();
     const readable = new ReadableStream({
@@ -71,14 +87,17 @@ export async function POST(request: Request) {
           if (modelObj.provider === "groq") {
             const stream = await groq.chat.completions.create({
               messages: [
-                { role: "system", content: instruccions },
-                ...groqHistoryFormat(historyData),
-                { role: "user", content: finalPrompt },
+                { role: "system", content: instruccions }, // Aqui el modelo recibe las instrucciones
+                ...groqHistoryFormat(historyData), // Aqui el modelo recibe el historial de la conversacion en el formato de groq
+                { role: "user", content: finalPrompt }, // Aqui el modelo recibe el prompt con o sin archivos
               ],
-              temperature: 0.2,
-              model,
-              stream: true,
-              include_reasoning: supportsReasoning ? true : undefined,
+              //temperature: 0.2, // la temperatura significa que tan creativo en sus respuestas es el modelo, 0.2 es poco creativo y 1 es muy creativo
+              top_p: 0.8, // el top_p significa que tan probable es que el modelo elija una palabra u otra, 0.9 es poco probable y 1 es muy probable el rango es de 0 a 1 (importante estudiarlo por aparte)
+              model, // Aqui se especifica el modelo a utilizar
+              stream: true, // Aqui se especifica que el modelo debe responder en tiempo real para que la app sea mas interactiva
+              tool_choice: "auto", // solo busca en el navegador si es necesario. required si queremos obligar al modelo a usar la herramienta
+              include_reasoning: supportsReasoning ? true : undefined, // Aqui se especifica que el modelo debe incluir el razonamiento (recomendable estudiar el tema por aparte para cada modelo)
+              tools: handleTools(),
             });
 
             let reasoning = "";

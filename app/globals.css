@@ -11,8 +11,7 @@ body {
   scrollbar-color: #ddd #fff;
 }
 body {
-  overflow-y: scroll;
-  scrollbar-gutter: stable !important;
+  overflow-y: auto;
 }
 
 * {
