@@ -38,7 +38,7 @@ function MessagesManager({
       if (userMessageRef.current) {
         userMessageRef.current.scrollIntoView({
           behavior: "smooth",
-          block: "start",
+          block: "end",
         });
       }
     }, 100);
@@ -49,7 +49,7 @@ function MessagesManager({
   return (
     <article
       className={cn(
-        "w-full overflow-x-auto lg:px-0 px-2 pb-37",
+        "w-full overflow-x-auto lg:px-0 px-2 pb-10",
         streamingContent && "scroll-smooth",
       )}
     >

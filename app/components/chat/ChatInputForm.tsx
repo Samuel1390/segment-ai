@@ -81,7 +81,7 @@ export default function ChatInputForm({
       className={cn(
         "w-full shadow-[0_-10px_40px_#fff] dark:shadow-[0_-10px_40px_#000]",
         "max-w-[780px] rounded-lg",
-        "bg-neutral-50 dark:bg-neutral-900 absolute",
+        "bg-neutral-50 dark:bg-neutral-900 sticky",
         "z-50 bottom-5 px-4 lg:px-7",
       )}
       action={handleAction}
