@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { RefObject, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import type { Models } from "../../constants";
@@ -78,15 +78,11 @@ export default function ChatInputForm({
     <form
       ref={formRef as any}
       onSubmit={handleSubmit}
-      style={{
-        left: "calc(50% - 9px)",
-        transform: "translateX(-50%)",
-      }}
       className={cn(
         "w-full shadow-[0_-10px_40px_#fff] dark:shadow-[0_-10px_40px_#000]",
         "max-w-[780px] rounded-lg",
         "bg-neutral-50 dark:bg-neutral-900 absolute",
-        "z-50 bottom-0 px-4 lg:px-7",
+        "z-50 bottom-5 px-4 lg:px-7",
       )}
       action={handleAction}
     >
@@ -143,6 +139,14 @@ export default function ChatInputForm({
             isStreaming={isStreaming}
           />
         </div>
+        <h3
+          className={cn(
+            "text-[0.8rem] text-neutral-500 text-nowrap max-[250px]:text-[0.6rem] dark:text-neutral-400 absolute -bottom-5 left-1/2 -translate-x-1/2",
+            "bg-white/50 z-40 dark:bg-black/50 backdrop-blur-sm px-2 rounded-md",
+          )}
+        >
+          Segment es una IA, puede cometer errores.
+        </h3>
       </div>
     </form>
   );

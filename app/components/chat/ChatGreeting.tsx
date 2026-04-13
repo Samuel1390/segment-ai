@@ -5,8 +5,8 @@ export default function ChatGreeting() {
   return (
     <div
       className={cn(
-        "flex flex-col h-full text-center",
-        "items-center justify-center mb-90",
+        "flex flex-col h-fit text-center",
+        "items-center justify-center",
       )}
     >
       <Logo size={60} className="mt-15" />

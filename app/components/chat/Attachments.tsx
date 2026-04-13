@@ -40,6 +40,22 @@ const Attachments = ({
       setIsLateralFilePreviewOpen(true);
     }
   };
+
+  const handleRemoveFile = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    i: number,
+  ) => {
+    event.stopPropagation();
+    setForm((prev: any) => {
+      const filesFiltered = prev.files.filter(
+        (_: any, index: number) => index !== i,
+      );
+      return {
+        ...prev,
+        files: filesFiltered,
+      };
+    });
+  };
   return (
     <div className="flex flex-wrap gap-2 mb-2 w-full">
       {files.map((file, i) => (
@@ -67,22 +83,7 @@ const Attachments = ({
               <button
                 type="button"
                 className="text-neutral-500 hover:text-red-500 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setForm((prev: any) => {
-                    const filesFiltered = prev.files.filter(
-                      (_: any, index: number) => index !== i,
-                    );
-                    const fileToRemove = prev.files[i];
-                    if (fileToRemove === currentFileOnPreview) {
-                      setFile(null);
-                    }
-                    return {
-                      ...prev,
-                      files: filesFiltered,
-                    };
-                  });
-                }}
+                onClick={(e) => handleRemoveFile(e, i)}
               >
                 <X size={16} />
               </button>

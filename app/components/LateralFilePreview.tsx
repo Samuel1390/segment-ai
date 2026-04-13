@@ -21,26 +21,9 @@ import type { FileInfo } from "../utils/getFileInfo";
 const LateralFilePreview = () => {
   const [fileContent, setFileContent] = useState<string | null>(null);
   const [fileInfo, setFileInfo] = useState<FileInfo | null>(null);
-  const {
-    file,
-    isLateralFilePreviewOpen,
-    setIsLateralFilePreviewOpen,
-    setFile,
-    filesOnForm,
-  } = useFilePreview();
+  const { file, isLateralFilePreviewOpen, setIsLateralFilePreviewOpen } =
+    useFilePreview();
   const { theme } = useTheme();
-
-  // useEffect(() => {
-  //   if (!filesOnForm?.length) {
-  //     setFile(null);
-  //     return;
-  //   }
-  //   filesOnForm.forEach((fileOnForm) => {
-  //     if (fileOnForm.name !== file?.name) {
-  //       setFile(null);
-  //     }
-  //   });
-  // }, [filesOnForm]);
 
   useEffect(() => {
     if (file) {
@@ -54,9 +37,9 @@ const LateralFilePreview = () => {
   return (
     <article
       hidden={!file || !isLateralFilePreviewOpen}
-      className={`absolute inset-0 z-[60] bg-white dark:bg-black p-4 flex flex-col gap-2 
-                  h-screen pt-16 self-end
-                  md:relative md:z-auto md:w-full md:max-w-[400px] md:h-full
+      className={`lateral-file-preview absolute inset-0 z-[60] bg-white dark:bg-black p-4 flex flex-col gap-2 
+                  h-screen pt-16
+                  md:sticky md:top-0 md:self-start md:z-auto md:w-full md:max-w-[400px] md:h-screen
                   md:pt-16 md:bg-transparent md:dark:bg-transparent md:p-0 md:pr-4`}
     >
       <div className="flex w-full justify-between items-center bg-gray-100 dark:bg-gray-800 p-2 rounded-md shrink-0 border border-gray-200 dark:border-gray-700">
@@ -97,7 +80,6 @@ const LateralFilePreview = () => {
               PreTag="div"
               customStyle={{
                 margin: 0,
-                paddingBlock: "1.5rem",
                 fontSize: "0.875rem",
                 backgroundColor: theme === "dark" ? "#0a0a0a" : "#f9fafb",
                 borderRadius: "0.5rem",

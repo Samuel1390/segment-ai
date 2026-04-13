@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LateralFilePreviewContext from "./LateralFilePreviewContext";
 
 export type Value = {
@@ -19,13 +19,21 @@ function LateralFilePreviewProvider({
   const [file, setFile] = useState<File | null>(null);
   const [isLateralFilePreviewOpen, setIsLateralFilePreviewOpen] =
     useState(false);
-
   // este estados lo uso para "vincular" el archivo que se
   // esta previsualizando con el archivo que se esta enviando
-
+  const [filesOnForm, setFilesOnForm] = useState<File[] | null>(null);
   // de esta forma si el usuario elimina los archivos del formulario
   // se cierra el lateral de previsualizacion
-  const [filesOnForm, setFilesOnForm] = useState<File[] | null>(null);
+
+  useEffect(() => {
+    if (filesOnForm && file) {
+      // Resolvimos un problema serio con esto
+      const fileMatch = filesOnForm.find((fl) => fl === file);
+      if (!fileMatch) {
+        setFile(null);
+      }
+    }
+  }, [filesOnForm]);
 
   return (
     <LateralFilePreviewContext.Provider

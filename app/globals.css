@@ -5,18 +5,25 @@ html,
 body {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
-  height: 100dvh;
+  overflow-x: clip;
+  min-height: 100dvh;
   width: 100dvw;
   scrollbar-color: #ddd #fff;
 }
-body {
-  overflow-y: auto;
+
+body.dark,
+html.dark {
+  scrollbar-color: #333 #000 !important;
 }
 
 * {
   box-sizing: border-box;
 }
+
+.lateral-file-preview {
+  scrollbar-color: #ddd transparent !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -131,9 +138,8 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-  body,
-  html {
-    scrollbar-color: #111 #000;
+  .lateral-file-preview {
+    scrollbar-color: #333 transparent !important;
   }
 }
 

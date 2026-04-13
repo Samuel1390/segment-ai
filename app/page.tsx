@@ -12,14 +12,14 @@ export default function Home() {
 
         <LateralFilePreviewProvider>
           <div
-            className={`flex w-full justify-evenly overflow-hidden
-          bg-white font-sans dark:bg-black gap-6 h-screen
+            className={`flex flex-1 w-full justify-evenly
+          bg-white font-sans dark:bg-black gap-6
             `}
           >
             <main
-              className="flex flex-1 min-w-0 max-w-[780px] bg-white relative
-            flex-col items-center justify-between pt-16
-            dark:bg-black sm:items-start h-full"
+              className="flex flex-1 w-full min-w-0 max-w-[780px] bg-white relative
+            flex-col items-center justify-between pt-16 pb-4.5
+            dark:bg-black sm:items-start"
             >
               <Chat />
             </main>

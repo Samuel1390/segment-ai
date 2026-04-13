@@ -94,8 +94,7 @@ const Chat = () => {
     <>
       <section
         className={cn(
-          `flex w-full flex-1 min-h-[0] justify-start items-center flex-col overflow-y-auto `,
-          ``,
+          `flex w-full flex-1 min-h-[0] justify-start items-center flex-col`,
         )}
       >
         {/* MODAL DE ERRORES | SE DISPARA CUANDO HAY UN ERROR EN EL SERVIDOR */}
