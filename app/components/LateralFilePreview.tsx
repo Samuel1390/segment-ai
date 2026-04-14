@@ -37,10 +37,10 @@ const LateralFilePreview = () => {
   return (
     <article
       hidden={!file || !isLateralFilePreviewOpen}
-      className={`lateral-file-preview absolute inset-0 z-[60] bg-white dark:bg-black p-4 flex flex-col gap-2 
-                  h-screen pt-16
-                  md:sticky md:top-0 md:self-start md:z-auto md:w-full md:max-w-[400px] md:h-screen
-                  md:pt-16 md:bg-transparent md:dark:bg-transparent md:p-0 md:pr-4`}
+      className={`lateral-file-preview absolute inset-0 z-[60] sticky w-screen
+        h-screen pt-16 bg-white dark:bg-black p-4 flex flex-col gap-2 
+        md:sticky md:top-0 md:self-start md:z-auto md:w-full md:max-w-[400px] md:h-screen
+        md:pt-16 md:bg-transparent md:dark:bg-transparent md:p-0 md:pr-4`}
     >
       <div className="flex w-full justify-between items-center bg-gray-100 dark:bg-gray-800 p-2 rounded-md shrink-0 border border-gray-200 dark:border-gray-700">
         <span className="font-semibold text-sm flex items-center gap-2 truncate mr-2">
