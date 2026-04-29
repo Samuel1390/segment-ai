@@ -103,8 +103,9 @@ const MarkdownRenderer = ({ content, historyData }: Props) => {
       </ReactMarkdown>
       {/* Footer de la respuesta del modelo | contiene informacion adicional */}
       <div className="py-4 mt-4 flex justify-between items-center gap-2 border-t-2 pt-3 dark:border-neutral-700 border-neutral-300">
-        <div className="text-md text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
-          Modelo: {modelObj.label} {modelObj?.icon && modelObj.icon}
+        <div className="text-md max-sm:text-sm text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
+          Modelo: {modelObj.label}
+          {modelObj?.icon && modelObj.icon}
         </div>
         <span className="flex items-center gap-2">
           {(modelObj.supportsBrowserSearch ||

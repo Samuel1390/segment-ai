@@ -38,7 +38,7 @@ function MessagesManager({
       if (userMessageRef.current) {
         userMessageRef.current.scrollIntoView({
           behavior: "smooth",
-          block: "end",
+          block: "start",
         });
       }
     }, 100);
